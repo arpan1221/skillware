@@ -1,0 +1,62 @@
+{
+  "record": "c02-manual-fix",
+  "run_id": "b38c638c-7624-4617-a670-349a833d6ea8",
+  "branch": "aw/c02-scaffold",
+  "base_sha": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e",
+  "supersedes_for_files": "evidence/c02-developer-attempt3.json (left unedited; its hashes describe attempt 3 before the manual fix)",
+  "author": "operator (manual fix on Arpan's instruction, option C)",
+  "changes": [
+    "c380ad4: Store tracks written EntityRefs; PASS refused when a written row is missing from output_refs (data-truth council challenge; SPEC line 58, ARCHITECTURE lines 77-80)",
+    "tests/test_cli.py: strip ANSI escapes before matching help output (Typer forces a Rich terminal under GITHUB_ACTIONS; fixes CI run 42910363226)"
+  ],
+  "files": [
+    {
+      "path": "src/skillware/store.py",
+      "bytes": 18937,
+      "lines": 513,
+      "sha256": "10c253adea85ebf53e1b8acecbf1dad6527ac3f0902f170815ac31e2154f53eb"
+    },
+    {
+      "path": "tests/test_store.py",
+      "bytes": 34764,
+      "lines": 820,
+      "sha256": "0f9bedb6d4168366e12c7204c5b1f96ac4b0a721dcd6d2d72ea6810652d50eb3"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "bytes": 1037,
+      "lines": 34,
+      "sha256": "4b4e1d01ec44d1c5a9ac9b77ac824250a69c173bd43312fe918bc984aca0ad9e"
+    }
+  ],
+  "checks": [
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv sync --locked",
+      "exit_code": 0
+    },
+    {
+      "command": "uv run pytest -q",
+      "exit_code": 0,
+      "summary": "106 passed in 1.06s",
+      "passed": 106,
+      "failed": 0
+    },
+    {
+      "command": "GITHUB_ACTIONS=true FORCE_COLOR=1 TERM=xterm-256color uv run pytest -q --color=no",
+      "exit_code": 0,
+      "summary": "106 passed in 1.06s"
+    },
+    {
+      "command": "uv run ruff check .",
+      "exit_code": 0,
+      "summary": "All checks passed!"
+    },
+    {
+      "command": "uv run ruff format --check .",
+      "exit_code": 0,
+      "summary": "22 files already formatted"
+    }
+  ],
+  "test_total": 106,
+  "recorded_at": "2026-11-10T23:54:01+00:00"
+}
