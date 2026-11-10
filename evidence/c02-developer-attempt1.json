@@ -1,0 +1,907 @@
+{
+  "assignment_id": "b7fc7e94-ae52-4167-a401-c40d7871e35e",
+  "worker_id": "f3f3dc50-a7c0-4dd0-8fe1-c28915fbdb3c",
+  "run_id": "b38c638c-7624-4617-a670-349a833d6ea8",
+  "attempt": 1,
+  "branch": "aw/c02-scaffold",
+  "base_sha": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e",
+  "status": "BLOCKED",
+  "claim_not_completion": true,
+  "scope": "C02 repository scaffold only; six CLI stages remain not-implemented exit-2 stubs by implementation, not runtime verification.",
+  "files": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 816,
+      "sha256": "e6cf361e4f2dbd2792fdcee3902f53181d681a39ec760743453048241f53718b"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 165,
+      "sha256": "b71450ea5ddd2d4e8f23f681d36f403e35be2816321d58c36b3e978172fd8b8e"
+    },
+    {
+      "path": ".python-version",
+      "bytes": 5,
+      "sha256": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2078,
+      "sha256": "66b4bec967ffda41484e2056995a8bdbcb282f99b85d6758edbb27d8c629c55e"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 2236,
+      "sha256": "ae869ddfe725e92b7dadf0c28e660537b54389e06566c8df884319df4e749a97"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1391,
+      "sha256": "dfe38434f4cb74e43c9235ba4d859cdc8dee7506e746b2e623d441acbe259731"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 752,
+      "sha256": "2ba7bf24546639f3c050d7c0ed4f3b4c27bffb616c5eb659446678484b57960a"
+    },
+    {
+      "path": "skills/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/skillware/__init__.py",
+      "bytes": 55,
+      "sha256": "ea35be46521b47a38714d8f8adeea9dbd3c45dceff9939e04d3337ba69eb659d"
+    },
+    {
+      "path": "src/skillware/cli.py",
+      "bytes": 1409,
+      "sha256": "08433e6dcb3c9d149471e84aa9998ff543b801b7e065ea023568d60144612d28"
+    },
+    {
+      "path": "src/skillware/cluster/__init__.py",
+      "bytes": 76,
+      "sha256": "44122e4b5f4efaf9f0e10e994a48e2b73c8794b1611017ed8ed443b5cc45a491"
+    },
+    {
+      "path": "src/skillware/evals/__init__.py",
+      "bytes": 79,
+      "sha256": "e1d7ed878dcc463a815330b46042c5d33b52cc7ad4a0455da47be81fef1732b9"
+    },
+    {
+      "path": "src/skillware/extract/__init__.py",
+      "bytes": 68,
+      "sha256": "18cd9e6c91ae791bfa5ada7cb2010f2b228550642437b24c607cfb2d2bcf71d2"
+    },
+    {
+      "path": "src/skillware/extract/adapters.py",
+      "bytes": 2095,
+      "sha256": "487b0334f2256901c74c7753114e4103221a0ae6623428b39a93fb9df8f63b3f"
+    },
+    {
+      "path": "src/skillware/ingest/__init__.py",
+      "bytes": 79,
+      "sha256": "c59ee1a22eeaa1e1cc612b6e72f58a487ef11d808c2c567317248cac8f6530dd"
+    },
+    {
+      "path": "src/skillware/links/__init__.py",
+      "bytes": 79,
+      "sha256": "419bb469c97417e5bb1c6ab2d3a103e33fb83eb5c3c2287453a2ba7a342c7b13"
+    },
+    {
+      "path": "src/skillware/schema.py",
+      "bytes": 10771,
+      "sha256": "69aef4aa697b3cf1eab427253e0225c08cff2152e0c180cae91e5c4c3462b0f7"
+    },
+    {
+      "path": "src/skillware/store.py",
+      "bytes": 13092,
+      "sha256": "4b722a5ef8aeceaa0ddb176463dc2e47c69697a31bbd05eb838478f907219fe7"
+    },
+    {
+      "path": "src/skillware/synth/__init__.py",
+      "bytes": 56,
+      "sha256": "c03c28a80dab6fc2bddfd429318357f21cf537baa50d38b69f7213894da7d82c"
+    },
+    {
+      "path": "tests/conftest.py",
+      "bytes": 581,
+      "sha256": "ed170368679c14cbeb3bdba92b5734483a61e0be6aac3dbe7bc1dad5224c72eb"
+    },
+    {
+      "path": "tests/test_adapters.py",
+      "bytes": 1632,
+      "sha256": "003253f46479c330109610d8cf0a714d94c6adb259583571288101593676a815"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "bytes": 808,
+      "sha256": "27c68e3be7e56ae5d5f60be4c4ada748299ea45676b5ecd8eda66a92a7977747"
+    },
+    {
+      "path": "tests/test_schema.py",
+      "bytes": 10862,
+      "sha256": "b6d839f1be5653668b88e6279ecd244ae97fc2af1468f3b6250afeda84f0e95c"
+    },
+    {
+      "path": "tests/test_store.py",
+      "bytes": 15038,
+      "sha256": "d80fa8461fb3f0a25967c682d27984b36071cb4612eea1ec58dbb2eda7c6e9a2"
+    }
+  ],
+  "checks": [
+    {
+      "command": "git branch --show-current",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "aw/c02-scaffold\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git rev-parse HEAD",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git rev-parse origin/main",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "uv --version",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "uv 0.12.19 (aarch64-unknown-linux-gnu)\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "python3.12 --version",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "Python 3.12.3\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "uv sync && uv run pytest -q",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: No solution found when resolving dependencies\n  cause: Because pydantic was not found in the cache and your project depends on pydantic>=2.10,<3, we can conclude that your project's requirements are unsatisfiable.\n\nhint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.\n",
+      "status": "BLOCKED"
+    },
+    {
+      "command": "uv run ruff check . && uv run ruff format --check .",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: No solution found when resolving dependencies\n  cause: Because pydantic was not found in the cache and your project depends on pydantic>=2.10,<3, we can conclude that your project's requirements are unsatisfiable.\n\nhint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.\n",
+      "status": "BLOCKED"
+    },
+    {
+      "command": "uv run skillware --help",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: No solution found when resolving dependencies\n  cause: Because pydantic was not found in the cache and your project depends on pydantic>=2.10,<3, we can conclude that your project's requirements are unsatisfiable.\n\nhint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.\n",
+      "status": "BLOCKED"
+    },
+    {
+      "command": "uv run python -m skillware.schema",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "error: No solution found when resolving dependencies\n  cause: Because pydantic was not found in the cache and your project depends on pydantic>=2.10,<3, we can conclude that your project's requirements are unsatisfiable.\n\nhint: Packages were unavailable because the network was disabled. When the network is disabled, registry packages may only be read from the cache.\n",
+      "status": "BLOCKED"
+    },
+    {
+      "command": "python3.12 -m compileall -q src tests",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --stat",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": " README.md | 30 ++++++++++++++++++++++++------\n 1 file changed, 24 insertions(+), 6 deletions(-)\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --exit-code fd46d76ba7ab72c1335788dbcda024ca1dcc413e -- LICENSE docs",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git check-ignore --no-index .skillware/probe.sqlite3 data/probe.md .cursor/probe .grok/probe .env .env.local",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": ".skillware/probe.sqlite3\ndata/probe.md\n.cursor/probe\n.grok/probe\n.env\n.env.local\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git status --short --untracked-files=all",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 0,
+      "stdout": " M README.md\n?? .github/workflows/ci.yml\n?? .gitignore\n?? .python-version\n?? AGENTS.md\n?? CONTRIBUTING.md\n?? pyproject.toml\n?? skills/.gitkeep\n?? src/skillware/__init__.py\n?? src/skillware/cli.py\n?? src/skillware/cluster/__init__.py\n?? src/skillware/evals/__init__.py\n?? src/skillware/extract/__init__.py\n?? src/skillware/extract/adapters.py\n?? src/skillware/ingest/__init__.py\n?? src/skillware/links/__init__.py\n?? src/skillware/schema.py\n?? src/skillware/store.py\n?? src/skillware/synth/__init__.py\n?? tests/conftest.py\n?? tests/test_adapters.py\n?? tests/test_cli.py\n?? tests/test_schema.py\n?? tests/test_store.py\n",
+      "stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null .github/workflows/ci.yml",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null .gitignore",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null .python-version",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null AGENTS.md",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null CONTRIBUTING.md",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null pyproject.toml",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null skills/.gitkeep",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/cli.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/cluster/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/evals/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/extract/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/extract/adapters.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/links/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/schema.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/store.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null src/skillware/synth/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null tests/conftest.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null tests/test_adapters.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null tests/test_cli.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null tests/test_schema.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --check -- /dev/null tests/test_store.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": "",
+      "stderr": "",
+      "status": "PASS",
+      "interpretation": "With --no-index, exit 1 can mean file differences; PASS requires no whitespace diagnostics."
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null .github/workflows/ci.yml",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => .github/workflows/ci.yml | 33 +++++++++++++++++++++++++++++++++\n 1 file changed, 33 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null .gitignore",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => .gitignore | 18 ++++++++++++++++++\n 1 file changed, 18 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null .python-version",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => .python-version | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null AGENTS.md",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => AGENTS.md | 33 +++++++++++++++++++++++++++++++++\n 1 file changed, 33 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null CONTRIBUTING.md",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => CONTRIBUTING.md | 42 ++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 42 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null pyproject.toml",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => pyproject.toml | 38 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 38 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null skills/.gitkeep",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => skills/.gitkeep | 0\n 1 file changed, 0 insertions(+), 0 deletions(-)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/cli.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/cli.py | 64 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 64 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/cluster/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/cluster/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/evals/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/evals/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/extract/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/extract/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/extract/adapters.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/extract/adapters.py | 63 ++++++++++++++++++++++++++\n 1 file changed, 63 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/ingest/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/links/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/links/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/schema.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/schema.py | 309 +++++++++++++++++++++++++++++++++++\n 1 file changed, 309 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/store.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/store.py | 356 ++++++++++++++++++++++++++++++++++++\n 1 file changed, 356 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null src/skillware/synth/__init__.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => src/skillware/synth/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null tests/conftest.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => tests/conftest.py | 17 +++++++++++++++++\n 1 file changed, 17 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null tests/test_adapters.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => tests/test_adapters.py | 43 +++++++++++++++++++++++++++++++++++++\n 1 file changed, 43 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null tests/test_cli.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => tests/test_cli.py | 27 +++++++++++++++++++++++++++\n 1 file changed, 27 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null tests/test_schema.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => tests/test_schema.py | 314 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 314 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    },
+    {
+      "command": "git diff --no-index --stat -- /dev/null tests/test_store.py",
+      "environment_overrides": {
+        "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+        "UV_OFFLINE": "true"
+      },
+      "exit_code": 1,
+      "stdout": " /dev/null => tests/test_store.py | 373 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 373 insertions(+)\n",
+      "stderr": "",
+      "status": "INFORMATION"
+    }
+  ],
+  "pytest_counts": {
+    "status": "BLOCKED",
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "collected": null,
+    "reason": "pytest never started because dependencies could not be installed."
+  },
+  "blocked": [
+    "Default uv cache is read-only; task cache has no required packages and PyPI DNS lookup fails inside the sandbox.",
+    "uv.lock has not been generated; reviewed locked dependency preparation is incomplete.",
+    "schemas/Talk.json, Segment.json, Claim.json, RepoRef.json, Cluster.json, Skill.json have not been generated because Pydantic is unavailable.",
+    "Required pytest, Ruff lint/format, installed CLI help and six command exit checks have not run.",
+    "GitHub Actions workflow execution and real corpus/eval quality were not run.",
+    "A human permission question for dependency-only network access is pending; no response or permission widening occurred."
+  ],
+  "assumptions_and_boundaries": [
+    "ASSUMPTION A1 default SQLite path .skillware/claims.sqlite3; constructor permits another path.",
+    "Offsets are half-open; Decimal seconds preserve precision; null is explicit unknown.",
+    "Historical C01-only path restrictions do not change the explicit C02 assignment; product docs and LICENSE were preserved.",
+    "Store currently uses immutable IDs and explicit version metadata, rejecting overwrites. Source deduplication, historical version selection, downstream invalidation, semantic evidence review, and publication validation remain future stage work.",
+    "New tests use synthetic structural examples, not human gold labels or evaluation rubrics; none were weakened or treated as quality scores.",
+    "The fixture adapter is the only implemented model adapter; no provider, live model, credential, or network calls exist in tests.",
+    "CI is configured for pull_request and Python 3.12 with uv, read-only contents permission, no secrets, PR-diff whitespace, locked sync, Ruff and pytest. It cannot pass until lockfile and schemas are generated.",
+    "No commit, push, PR, merge, settings change, publication, or protected-file edit was performed."
+  ],
+  "prior_dependency_attempts": [
+    {
+      "command": "mkdir -p data && uv sync --offline",
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "diagnostic": "Failed to initialize cache at /home/agent/.cache/uv: read-only file system."
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache uv sync --offline",
+      "exit_code": 1,
+      "status": "BLOCKED",
+      "diagnostic": "pydantic was not found in the cache; requirements unsatisfiable offline."
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache uv sync",
+      "exit_code": 2,
+      "status": "BLOCKED",
+      "diagnostic": "Failed to fetch https://pypi.org/simple/pytest/ after 3 retries: DNS lookup failed, Temporary failure in name resolution."
+    }
+  ],
+  "supplemental_diagnostics": [
+    "An initial stdlib SQLite DDL diagnostic exited 1 because it expected deferred foreign-key rejection at insert time. The corrected diagnostic explicitly committed and exited 0: all 12 DDL tables were accepted and the dangling Segment was rejected at commit. No production constraint or test criterion was weakened.",
+    "AST/syntax and manual whitespace/line-length checks are supplemental only; they do not substitute for the required pytest/Ruff checks."
+  ],
+  "protected_paths": [
+    {
+      "path": "LICENSE",
+      "matches_base": true,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "docs/SPEC.md",
+      "matches_base": true,
+      "sha256": "6c95f3627b5755f147a8078b0ca53ffa099c366a634b7ce5e72cfd6ed723d460"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "matches_base": true,
+      "sha256": "4e092f31847804f87a94f256b1e2b4199149c9f81b91a84452a08f907083ad92"
+    },
+    {
+      "path": "docs/REQUIREMENTS.md",
+      "matches_base": true,
+      "sha256": "999198f202b3f940cfccf77f28b9b6b50a8ff686f8b60efbf23b20af026d99b3"
+    }
+  ],
+  "handoff": [
+    "After human-approved dependency access or a supplied package cache, use UV_CACHE_DIR=/tmp/skillware-c02-uv-cache uv sync to create uv.lock.",
+    "Run UV_CACHE_DIR=/tmp/skillware-c02-uv-cache uv run python -m skillware.schema to create the six JSON schemas.",
+    "Run the exact requested sync/pytest, Ruff lint/format, CLI help and six stub commands, and all diff/new-file checks; fix implementation failures without weakening tests.",
+    "Independent tester must rerun and record world_review; reviewer must explicitly rely on tester evidence. This is a BLOCKED developer claim, not acceptance."
+  ]
+}

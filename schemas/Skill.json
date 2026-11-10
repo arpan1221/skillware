@@ -1,0 +1,198 @@
+{
+  "$defs": {
+    "Citation": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "minLength": 1,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "claim_version": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Claim Version",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Text",
+          "type": "string"
+        },
+        "url": {
+          "anyOf": [
+            {
+              "minLength": 1,
+              "pattern": "\\S",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Url"
+        }
+      },
+      "required": [
+        "claim_id",
+        "claim_version",
+        "text"
+      ],
+      "title": "Citation",
+      "type": "object"
+    },
+    "StageOutcome": {
+      "description": "Unrun or missing checks are BLOCKED, never an implicit PASS.",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED"
+      ],
+      "title": "StageOutcome",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowed_tools": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Maps to the optional allowed-tools frontmatter field.",
+      "title": "Allowed Tools"
+    },
+    "body": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Body",
+      "type": "string"
+    },
+    "citations": {
+      "items": {
+        "$ref": "#/$defs/Citation"
+      },
+      "title": "Citations",
+      "type": "array"
+    },
+    "cluster_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Cluster Ids",
+      "type": "array"
+    },
+    "cluster_versions": {
+      "additionalProperties": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Cluster Versions",
+      "type": "object"
+    },
+    "compatibility": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Compatibility"
+    },
+    "description": {
+      "maxLength": 1024,
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Description",
+      "type": "string"
+    },
+    "eval_status": {
+      "$ref": "#/$defs/StageOutcome",
+      "default": "BLOCKED"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "License"
+    },
+    "metadata": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Metadata",
+      "type": "object"
+    },
+    "name": {
+      "maxLength": 64,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "title": "Name",
+      "type": "string"
+    },
+    "pack_name": {
+      "const": "The AI Engineer Playbook",
+      "default": "The AI Engineer Playbook",
+      "title": "Pack Name",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "validation_status": {
+      "$ref": "#/$defs/StageOutcome",
+      "default": "BLOCKED"
+    },
+    "version": {
+      "default": "1",
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "description",
+    "body"
+  ],
+  "title": "Skill",
+  "type": "object"
+}

@@ -1,0 +1,218 @@
+{
+  "$defs": {
+    "InspectionStatus": {
+      "enum": [
+        "mentioned",
+        "unavailable",
+        "inspected",
+        "mismatch"
+      ],
+      "title": "InspectionStatus",
+      "type": "string"
+    },
+    "RepositoryFact": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "minLength": 1,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "claim_version": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Claim Version",
+          "type": "string"
+        },
+        "claimed": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Claimed",
+          "type": "string"
+        },
+        "observed": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RepositoryObservation"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "claim_id",
+        "claim_version",
+        "claimed"
+      ],
+      "title": "RepositoryFact",
+      "type": "object"
+    },
+    "RepositoryObservation": {
+      "additionalProperties": false,
+      "description": "A static observation, not a claim of runtime correctness.",
+      "properties": {
+        "blob_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Blob Sha256",
+          "type": "string"
+        },
+        "fact": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Fact",
+          "type": "string"
+        },
+        "file_path": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "File Path",
+          "type": "string"
+        },
+        "line_end": {
+          "minimum": 1,
+          "title": "Line End",
+          "type": "integer"
+        },
+        "line_start": {
+          "minimum": 1,
+          "title": "Line Start",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "fact",
+        "file_path",
+        "line_start",
+        "line_end",
+        "blob_sha256"
+      ],
+      "title": "RepositoryObservation",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "claim_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "claim_versions": {
+      "additionalProperties": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Claim Versions",
+      "type": "object"
+    },
+    "commit": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Commit"
+    },
+    "facts": {
+      "items": {
+        "$ref": "#/$defs/RepositoryFact"
+      },
+      "title": "Facts",
+      "type": "array"
+    },
+    "host": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Host",
+      "type": "string"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "inspection_status": {
+      "$ref": "#/$defs/InspectionStatus",
+      "default": "mentioned"
+    },
+    "license": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Null explicitly means the license is unknown.",
+      "title": "License"
+    },
+    "license_evidence": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "License Evidence",
+      "type": "string"
+    },
+    "name": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Name",
+      "type": "string"
+    },
+    "owner": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Owner",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "url": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Url",
+      "type": "string"
+    },
+    "version": {
+      "default": "1",
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "url",
+    "host",
+    "owner",
+    "name",
+    "license_evidence"
+  ],
+  "title": "RepoRef",
+  "type": "object"
+}

@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.19"
+          python-version: "3.12"
+      - name: Check pull request whitespace
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: git diff --check "$BASE_SHA"...HEAD
+      - name: Install locked dependencies
+        run: uv sync --locked
+      - name: Lint, format, and run offline fixture tests
+        env:
+          UV_OFFLINE: "true"
+        run: |
+          uv run --frozen ruff check .
+          uv run --frozen ruff format --check .
+          uv run --frozen pytest -q

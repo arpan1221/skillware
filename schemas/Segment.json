@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "end_seconds": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "End Seconds"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "ordinal": {
+      "minimum": 0,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "source_end": {
+      "description": "Exclusive character offset in the source.",
+      "minimum": 0,
+      "title": "Source End",
+      "type": "integer"
+    },
+    "source_start": {
+      "description": "Inclusive character offset in the source.",
+      "minimum": 0,
+      "title": "Source Start",
+      "type": "integer"
+    },
+    "speaker_override": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Speaker Override"
+    },
+    "speaker_override_evidence": {
+      "anyOf": [
+        {
+          "minLength": 1,
+          "pattern": "\\S",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Speaker Override Evidence"
+    },
+    "start_seconds": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Start Seconds"
+    },
+    "talk_id": {
+      "minLength": 1,
+      "title": "Talk Id",
+      "type": "string"
+    },
+    "talk_version": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Talk Version",
+      "type": "string"
+    },
+    "text": {
+      "description": "Private source text; never export.",
+      "title": "Text",
+      "type": "string"
+    },
+    "version": {
+      "default": "1",
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "talk_id",
+    "talk_version",
+    "ordinal",
+    "text",
+    "source_start",
+    "source_end"
+  ],
+  "title": "Segment",
+  "type": "object"
+}

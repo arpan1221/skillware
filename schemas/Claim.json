@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "ExtractionProvenance": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_id": {
+          "minLength": 1,
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "input_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Sha256",
+          "type": "string"
+        },
+        "model_id": {
+          "minLength": 1,
+          "title": "Model Id",
+          "type": "string"
+        },
+        "prompt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Prompt Sha256",
+          "type": "string"
+        },
+        "provider_id": {
+          "minLength": 1,
+          "title": "Provider Id",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/StageOutcome",
+          "default": "BLOCKED"
+        },
+        "run_receipt": {
+          "minLength": 1,
+          "title": "Run Receipt",
+          "type": "string"
+        },
+        "schema_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Schema Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_sha256",
+        "prompt_sha256",
+        "schema_sha256",
+        "adapter_id",
+        "provider_id",
+        "model_id",
+        "run_receipt"
+      ],
+      "title": "ExtractionProvenance",
+      "type": "object"
+    },
+    "StageOutcome": {
+      "description": "Unrun or missing checks are BLOCKED, never an implicit PASS.",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED"
+      ],
+      "title": "StageOutcome",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "applicability": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Applicability",
+      "type": "string"
+    },
+    "citation_status": {
+      "$ref": "#/$defs/StageOutcome",
+      "default": "BLOCKED"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ExtractionProvenance"
+    },
+    "quote": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Quote",
+      "type": "string"
+    },
+    "quote_end": {
+      "description": "Exclusive character offset in the segment.",
+      "minimum": 0,
+      "title": "Quote End",
+      "type": "integer"
+    },
+    "quote_start": {
+      "description": "Inclusive character offset in the segment.",
+      "minimum": 0,
+      "title": "Quote Start",
+      "type": "integer"
+    },
+    "repo_ref_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Repo Ref Ids",
+      "type": "array"
+    },
+    "repo_ref_versions": {
+      "additionalProperties": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Repo Ref Versions",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "segment_id": {
+      "minLength": 1,
+      "title": "Segment Id",
+      "type": "string"
+    },
+    "segment_version": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Segment Version",
+      "type": "string"
+    },
+    "statement": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Statement",
+      "type": "string"
+    },
+    "version": {
+      "default": "1",
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "segment_id",
+    "segment_version",
+    "statement",
+    "applicability",
+    "quote",
+    "quote_start",
+    "quote_end",
+    "provenance"
+  ],
+  "title": "Claim",
+  "type": "object"
+}
