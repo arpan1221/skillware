@@ -187,8 +187,9 @@ class StageTransaction:
 class Store:
     """A configurable SQLite store; typed writes require ``stage_transaction``.
 
-    Only PASS commits stage output. FAIL, BLOCKED, and raised exceptions roll
-    back output and retain a separate attempt receipt. Existing records are
+    Only PASS commits stage output, and only when its receipt lists every exact
+    row the stage wrote; an unlisted write fails the stage. FAIL, BLOCKED, and
+    raised exceptions roll back output and retain a separate attempt receipt. Existing records are
     never updated by ``put``; a new version retains the same stable ID.
     No connection or database is created at import.
     """
@@ -200,6 +201,7 @@ class Store:
         self.connection.row_factory = sqlite3.Row
         self._stage_active = False
         self._write_error: BaseException | None = None
+        self._written_refs: list[EntityRef] = []
         try:
             self.connection.execute("PRAGMA foreign_keys = ON")
             self._initialize()
@@ -258,6 +260,11 @@ class Store:
         except BaseException as exc:
             self._write_error = exc
             raise
+        self._written_refs.append(
+            EntityRef(
+                entity_type=type(entity).__name__, id=entity.id, version=entity.version
+            )
+        )
 
     def _insert(self, entity: Entity) -> None:
         model = type(entity)
@@ -402,6 +409,7 @@ class Store:
         self.connection.execute("BEGIN IMMEDIATE")
         self._stage_active = True
         self._write_error = None
+        self._written_refs = []
         try:
             yield attempt
             if self._write_error is not None:
@@ -416,6 +424,7 @@ class Store:
             else:
                 self._check_repo_links()
                 self._check_output_refs(attempt.output_refs)
+                self._check_written_refs_declared(attempt.output_refs)
             self._record_attempt(attempt, stage, config_version, inputs, started_at)
             self.connection.commit()
         except BaseException as exc:
@@ -432,6 +441,7 @@ class Store:
         finally:
             self._stage_active = False
             self._write_error = None
+            self._written_refs = []
 
     def _check_repo_links(self) -> None:
         # Both serialized declarations must describe the same many-to-many link.
@@ -459,6 +469,20 @@ class Store:
         for reference in references:
             if self.resolve(reference) is None:
                 raise ValueError(f"output reference does not resolve: {reference}")
+
+    def _check_written_refs_declared(self, references: list[EntityRef]) -> None:
+        # SPEC: each stage records its output references; a PASS receipt must
+        # list every exact (type, id, version) row the stage wrote, so output
+        # and receipt commit together and no written row is left unaccounted.
+        declared = {EntityRef.model_validate(ref) for ref in references}
+        missing = [ref for ref in self._written_refs if ref not in declared]
+        if missing:
+            listed = ", ".join(
+                f"{ref.entity_type}:{ref.id}@{ref.version}" for ref in missing
+            )
+            raise ValueError(
+                f"PASS stage wrote rows missing from its output_refs: {listed}"
+            )
 
     def _record_attempt(
         self,

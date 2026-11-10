@@ -357,10 +357,16 @@ def test_each_missing_entity_link_rejects_whole_stage(
             with store.stage_transaction(
                 Stage.INGEST, config_version="fixture"
             ) as attempt:
-                for index, entity in enumerate(evidence_graph):
-                    if index != omitted_index:
-                        store.put(entity)
-                attempt.finish(StageOutcome.PASS)
+                written = [
+                    entity
+                    for index, entity in enumerate(evidence_graph)
+                    if index != omitted_index
+                ]
+                for entity in written:
+                    store.put(entity)
+                attempt.finish(
+                    StageOutcome.PASS, output_refs=[entity.ref for entity in written]
+                )
         for entity in evidence_graph:
             assert store.get(type(entity), entity.id) is None
         outcome = store.connection.execute("SELECT outcome FROM stage_runs").fetchone()[
@@ -576,7 +582,9 @@ def test_existing_id_with_missing_referenced_version_rejects_whole_stage(
             ) as stage:
                 for entity in reversed(graph):
                     store.put(entity)
-                stage.finish(StageOutcome.PASS)
+                stage.finish(
+                    StageOutcome.PASS, output_refs=[entity.ref for entity in graph]
+                )
         for entity in graph:
             assert store.get(type(entity), entity.id, version="1") is None
             assert store.get(type(entity), entity.id, version="2") is None
@@ -692,7 +700,9 @@ def test_nonmembership_claim_references_pin_the_exact_version(
             ) as stage:
                 for entity in graph:
                     store.put(entity)
-                stage.finish(StageOutcome.PASS)
+                stage.finish(
+                    StageOutcome.PASS, output_refs=[entity.ref for entity in graph]
+                )
         for entity in graph:
             assert store.resolve(entity.ref) is None
         receipt = store.connection.execute("SELECT * FROM stage_runs").fetchone()
@@ -736,7 +746,7 @@ def test_two_versions_of_same_talk_count_as_one_supporting_identity(
     )
     with Store(tmp_path / "claims.sqlite3") as store:
         with store.stage_transaction(Stage.CLUSTER, config_version="fixture") as stage:
-            for entity in (
+            written = (
                 talk,
                 revised_talk,
                 segment,
@@ -744,9 +754,12 @@ def test_two_versions_of_same_talk_count_as_one_supporting_identity(
                 first_claim,
                 second_claim,
                 cluster,
-            ):
+            )
+            for entity in written:
                 store.put(entity)
-            stage.finish(StageOutcome.PASS, output_refs=[cluster.ref])
+            stage.finish(
+                StageOutcome.PASS, output_refs=[entity.ref for entity in written]
+            )
         counts = store.connection.execute(
             "SELECT COUNT(*), COUNT(DISTINCT talks.id) "
             "FROM cluster_claims AS links "
@@ -764,3 +777,44 @@ def test_two_versions_of_same_talk_count_as_one_supporting_identity(
         stored_cluster = store.get(Cluster, cluster.id, version=cluster.version)
         assert stored_cluster.distinct_supporting_talk_count == 1
         assert stored_cluster.label.value == "insufficient"
+
+
+@pytest.mark.parametrize("declared", ["none", "partial"])
+def test_pass_with_unlisted_written_row_fails_loudly_and_rolls_back(
+    tmp_path, talk, segment, declared
+):
+    output_refs = [] if declared == "none" else [talk.ref]
+    with Store(tmp_path / "claims.sqlite3") as store:
+        with pytest.raises(ValueError, match="missing from its output_refs") as error:
+            with store.stage_transaction(
+                Stage.INGEST, config_version="fixture"
+            ) as stage:
+                store.put(talk)
+                store.put(segment)
+                stage.finish(StageOutcome.PASS, output_refs=output_refs)
+        assert "Segment:segment-1@1" in str(error.value)
+        assert ("Talk:talk-1@1" in str(error.value)) is (declared == "none")
+        assert store.get(Talk, talk.id) is None
+        assert store.get(Segment, segment.id) is None
+        receipts = store.connection.execute("SELECT * FROM stage_runs").fetchall()
+        assert len(receipts) == 1
+        assert receipts[0]["outcome"] == "FAIL"
+        assert "missing from its output_refs" in receipts[0]["error"]
+        assert json.loads(receipts[0]["output_refs"]) == []
+
+
+def test_pass_receipt_listing_every_written_row_commits(tmp_path, evidence_graph):
+    refs = [entity.ref for entity in evidence_graph]
+    with Store(tmp_path / "claims.sqlite3") as store:
+        with store.stage_transaction(Stage.INGEST, config_version="fixture") as stage:
+            for entity in evidence_graph:
+                store.put(entity)
+            stage.finish(StageOutcome.PASS, output_refs=list(reversed(refs)))
+        for entity in evidence_graph:
+            assert store.resolve(entity.ref) == entity
+        receipt = store.connection.execute("SELECT * FROM stage_runs").fetchone()
+        assert receipt["outcome"] == "PASS"
+        recorded = {
+            EntityRef.model_validate(ref) for ref in json.loads(receipt["output_refs"])
+        }
+        assert recorded == set(refs)
