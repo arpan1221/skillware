@@ -1,7 +1,8 @@
 # skillware product specification
 
-Status: C01 design for review. This document and [ARCHITECTURE.md](ARCHITECTURE.md)
-define the future implementation; the seed contains only README and LICENSE.
+Status: C01 design for review. The C01 deliverables are this document,
+[ARCHITECTURE.md](ARCHITECTURE.md), and [REQUIREMENTS.md](REQUIREMENTS.md).
+They define the future implementation; the seed contains only README and LICENSE.
 No pipeline, corpus, quality results, or launch permission is implied.
 
 ## Product goal and scope
@@ -37,7 +38,7 @@ rather than silently rewriting evidence used by an existing skill.
 | `Segment` | `id`, `talk_id`, `ordinal`, private `text`, source character offsets, nullable `start_seconds`/`end_seconds`, and a source-backed speaker override for multi-speaker talks when needed. Preserve the original timing precision. |
 | `Claim` | `id`, `segment_id`, one atomic `statement`, its `applicability`, one short supporting `quote`, quote character offsets within the segment, `citation_status`, `repo_ref_ids`, and extraction provenance. Provenance includes input/prompt/schema hashes, adapter/provider/model identifiers, run receipt, and review status. |
 | `RepoRef` | `id`, canonical `url`, `host`, `owner`, `name`, linked `claim_ids`, `inspection_status`, nullable pinned `commit`, license value or explicit unknown with evidence, and claimed-versus-observed facts. Observations carry file path, line range, and blob hash. |
-| `Cluster` | `id`, scoped `proposition`, member `claim_ids`, supporting/opposing claim IDs, reviewed evidence relations, distinct-talk count, `label`, rationale, assessment status, and clustering configuration hash. Labels are `consensus`, `contested`, or `insufficient`. |
+| `Cluster` | `id`, scoped `proposition`, member `claim_ids`, supporting/opposing claim IDs, reviewed evidence relations, distinct-talk count plus separate distinct supporting/opposing talk counts, `label`, rationale, assessment status, and clustering configuration hash. Validation derives publication counts and labels from publishable claims. Labels are `consensus`, `contested`, or `insufficient`. |
 | `Skill` | `id`, `pack_name`, Agent Skills `name` and `description`, Markdown `body`, supporting `cluster_ids`, citations mapped to claims, version, validation status, and eval status. The MVP `pack_name` is `The AI Engineer Playbook`. |
 
 The evidence chain is `Skill → Cluster → Claim → Segment → Talk`. `RepoRef`
@@ -61,11 +62,11 @@ unrun. A later successful stage cannot erase an earlier failure or blockage.
 
 | Stage | Contract |
 | --- | --- |
-| ingest | Read declared local Markdown inputs; normalize metadata; retain source offsets and real timing; identify duplicate talks; emit `Talk` and `Segment` records. Flag missing or ambiguous attribution. |
+| ingest | Read declared local Markdown inputs; normalize metadata; retain source offsets and real timing; identify duplicate talks; emit `Talk` and `Segment` records. Missing or ambiguous speaker/source attribution makes affected claims BLOCKED; contradictory attribution makes them FAIL. An undecided duplicate check blocks the affected cluster's distinct-talk assessment. |
 | extract | Use a configured existing CLI subscription to propose atomic practices, applicability, exact short quotes, and repository mentions. Validate response structure and quote spans before accepting `Claim`/`RepoRef` records. Reject invented evidence. |
 | cluster | Form candidates with local vectors, then assess scoped agreement and opposition using source evidence. Emit labeled `Cluster` records with rationale, unresolved relations, and provenance. Similarity alone never establishes consensus. |
 | synthesize | Turn eligible reviewed clusters into draft `Skill` instructions. Cite procedural claims, preserve caveats, and present contested alternatives with both sources. Keep insufficient evidence as research notes, outside the release pack. |
-| validate | Check schema, relationships, frontmatter, attribution, timestamp construction, source spans, quote budgets, repository evidence status, and release file allowlist. Emit a report; invalid output cannot advance as validated. |
+| validate | Check schema, relationships, frontmatter, attribution, timestamp construction, source spans, quote budgets, repository evidence status, and release file allowlist. After any claim is dropped, recompute distinct supporting/opposing talk counts from remaining publishable claims and re-derive labels. Invalidate affected drafts and emit a report; invalid output cannot advance as validated. |
 | eval | Measure extraction, grounding, cross-talk judgments, repository observations, and task usefulness against reviewed labels and a versioned rubric. Emit denominators, scores, failures, and blocked checks. Missing gold labels remain BLOCKED. |
 
 The provider/model/CLI choice is configuration, not product identity. Extraction
@@ -76,8 +77,11 @@ no live LLM calls. `grok-4.7-high` remains an Arpan decision, not a dependency.
 
 ## Cross-talk evidence
 
-Deduplicate sources before counting distinct talks. Assess the same proposition
-under comparable conditions; different workloads or constraints may explain an
+Deduplicate sources before counting distinct talks. An undecided duplicate check,
+including unresolved talk identity or possibly-same URLs, makes the affected
+cluster assessment BLOCKED until resolved. Such records must never count as
+independent talks or inflate consensus. Assess the same proposition under
+comparable conditions; different workloads or constraints may explain an
 apparent disagreement and must remain visible.
 
 - **consensus:** at least two distinct, deduplicated talks support the same scoped
@@ -89,6 +93,17 @@ apparent disagreement and must remain visible.
   do not average them into one recommendation or hide the minority position.
 - **insufficient:** one talk, too little support, ambiguous scope, or unresolved
   relations prevent either conclusion. Do not promote it to consensus.
+
+Validation must recompute distinct supporting and opposing talk counts from the
+claims that remain publishable after every exclusion, including a failed span
+check or missing attribution. It must re-derive `consensus`, `contested`, or
+`insufficient` using those counts and the reviewed relations, never retain a
+cached label from the original membership. Losing one of two supporting talks
+therefore removes consensus eligibility. Preserve excluded claims and reasons in
+the internal report; dropping an opposing claim must not erase a known
+contradiction or unresolved relation and manufacture consensus. Block the affected
+assessment until that evidence is resolved. Any membership or label change
+invalidates dependent drafts; re-synthesize and revalidate them before eval.
 
 **ASSUMPTION A3 — candidate clustering:** use local TF-IDF unigrams/bigrams with
 negation retained, optional truncated SVD with seed `0`, L2 normalization, and
@@ -152,9 +167,12 @@ it does not generate executable scripts from transcript instructions.
 
 Every published quote and substantive paraphrased practice identifies the
 speaker, company, and talk, linked to the source YouTube timestamp. Unknown
-company renders as `company unknown`; never invent an affiliation. Unresolved
-speaker identity blocks publication. A multi-speaker segment uses its verified
-speaker attribution rather than attributing every remark to the headline speaker.
+company renders as `company unknown`; never invent an affiliation. Missing or
+ambiguous speaker/source attribution makes the claim BLOCKED, not merely flagged;
+contradicted attribution or a failed span check makes it FAIL. Neither outcome is
+publishable or counts as supporting/opposing publication evidence. A multi-speaker
+segment uses its verified speaker attribution rather than attributing every remark
+to the headline speaker.
 
 `src/skillware/links` constructs links of the form
 `https://www.youtube.com/watch?v=VIDEO_ID&t=SECONDS` from a verified video ID and
@@ -174,10 +192,11 @@ Markdown and evidence notes, not just individual `SKILL.md` files. Splitting a
 transcript among files or reconstructing it as a sequence of excerpts is rejected.
 These are editorial limits, not a finding that reuse is licensed.
 
-The project code remains Apache-2.0 under [LICENSE](../LICENSE). Talk content
-belongs to its speakers and AI Engineer. Publish original synthesis, short quotes,
-and links; **full transcripts are not republished**, nor are raw extraction dumps
-or repository source. Public availability and a skill's optional `license` field
+The project code remains Apache-2.0 under [LICENSE](../LICENSE). The project claims
+no rights in talk content; rights remain with their respective rights holders.
+Publish original synthesis, short quotes, and links; **full transcripts are not
+republished**, nor are raw extraction dumps or repository source. Public
+availability and a skill's optional `license` field
 do not grant rights to source content. **Ask AI Engineer before launch:** Arpan
 must contact them and resolve acceptable reuse, attribution, and launch terms.
 Launch remains blocked until those terms are recorded and satisfied.
@@ -198,9 +217,10 @@ missing labels, unrun metrics, or undecided criteria mean BLOCKED. Never weaken
 tests or change evaluation criteria to make output pass. Changes to future gold
 labels, rubrics, thresholds, or baselines require the human evaluation-change gate.
 
-C01 acceptance evidence consists of these two docs, a section/word-count checklist,
-their SHA-256 hashes, the base revision, and a clean `git diff --check`. New files
-must also be checked directly because ordinary Git diffs omit untracked files.
+C01 acceptance evidence consists of `docs/SPEC.md`, `docs/ARCHITECTURE.md`, and
+`docs/REQUIREMENTS.md`, a section/word-count checklist, their SHA-256 hashes, the
+base revision, and a clean `git diff --check`. New files must also be checked
+directly because ordinary Git diffs omit untracked files.
 Independent tester/reviewer checks and any unresolved Page comparison are reported
 separately from the developer's claim. Runtime and quality checks are BLOCKED in
 this documentation-only slice, not reported as passed.
@@ -214,7 +234,7 @@ publish, or merge. Missing PR approval leaves the merge gate BLOCKED.
 
 - No hosted YouTube scraper, web UI in the MVP, or paired-mode HTTP app.
 - No general channel ingestion in this MVP; “paste any channel” is later work.
-- No C01 implementation beyond these two docs, C02 scaffolding, network ingestion,
+- No C01 implementation beyond these three docs, C02 scaffolding, network ingestion,
   live LLM calls, or paid API dependency.
 - No automatic endorsement of a practice, fabricated consensus, full transcript
   redistribution, or execution/vendoring of referenced repositories.

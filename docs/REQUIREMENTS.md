@@ -1,10 +1,10 @@
 # C01 requirements
 
-Requirements seat `4fd3ca28-676b-4788-8c7d-84f4eddb69cc` (read-only, accepted, attempt 2, not BLOCKED). This file is the broker-hashed requirements artifact. It is the input for the architect and the developer. It is not a substitute for `docs/SPEC.md` or `docs/ARCHITECTURE.md`.
+Requirements seat `4fd3ca28-676b-4788-8c7d-84f4eddb69cc` (read-only, accepted, attempt 2, not BLOCKED). This file is the requirements artifact and an input for the architect and developer. Per Arpan's rework brief, it stays in the C01 deliverable alongside `docs/SPEC.md` and `docs/ARCHITECTURE.md`; revised bytes require fresh broker hashes.
 
-Architect `7ca2baa9-f918-407e-a742-ff34b0bc57e2` stays a separate read-only seat and depends on this submission. Developer `2ca2f64d-5de8-4382-bdab-e90267746802` (Codex gpt-6-astra, workspace-write) is the only writer of those two product docs.
+Architect `7ca2baa9-f918-407e-a742-ff34b0bc57e2` stays a separate read-only seat and depends on this submission. Developer `2ca2f64d-5de8-4382-bdab-e90267746802` (Codex gpt-6-astra, workspace-write) is the only writer of the three C01 documents under Arpan's rework brief. Requirements and architect seats remain read-only.
 
-Worktree: branch `aw/c01-spec` at `a075291dac541547faaade9fb32cadebc4f4a4a3` (README + Apache-2.0 LICENSE). The seed has no due-diligence document and no transcripts. The Page gap is the three topics named in the objective: cross-talk consensus/contested, repo mining, and evals. `.cursor/` is local and must not be committed.
+Worktree: branch `aw/c01-spec`. The seed base (`origin/main`) is `a075291dac541547faaade9fb32cadebc4f4a4a3` (README + Apache-2.0 LICENSE); it is not the current branch tip. The C01 documentation commit is `22f9fefe6fdf9cf3765e91ddf8d003253aa5dfc7`, the HEAD observed before this uncommitted rework. The seed has no due-diligence document and no transcripts. The Page gap is the three topics named in the objective: cross-talk consensus/contested, repo mining, and evals. `.cursor/` is local and must not be committed.
 
 An earlier requirements file in this worktree used seat IDs from a different run. Those IDs are void. Use the IDs in this file.
 
@@ -37,14 +37,17 @@ Forced by citations and the Page gap:
 Both docs use the same labels.
 
 - Cross-talk: consensus requires support from at least two distinct talks and no contradiction among them. Contested means the talks disagree, and the skill cites both sides. A single talk, or support too thin to call, is not consensus; label that `insufficient`. Do not average a disagreement into a fake consensus.
+- An undecided duplicate check, including unresolved talk identity or possibly-same URLs, makes the affected cluster assessment BLOCKED until resolved. Uncertain identities never count as independent talks or inflate consensus.
+- After any claim is dropped, including span check failure or missing attribution, validate recomputes distinct supporting and opposing talk counts from remaining publishable claims and re-derives labels. Excluded opposition must not erase known contradictions or unresolved relations to manufacture consensus; block the affected assessment until resolved. Changed membership or labels invalidate dependent drafts, which must be re-synthesized and revalidated before eval.
 - Repo mining: RepoRef is first-class. Mining records identity, license, and what was claimed versus what is present, tied back to the Claim. Third-party source is not vendored into the pack.
 - Evals: the eval stage exists in the spec and in `src/skillware/evals`. Missing gold labels do not delete the stage.
 
 ### Citation, license, frontmatter
 
 - Every published quote cites speaker, company, and talk, plus a YouTube timestamp link built from the transcript's video id and start time (`t=` seconds). `src/skillware/links` owns that formatting. A quote with no timestamp is not published with a timestamp link.
+- Missing or ambiguous speaker/source attribution makes the claim BLOCKED, not merely flagged; contradicted attribution or a failed span check makes it FAIL. Neither can be published or counted as supporting/opposing publication evidence. Unknown company remains explicitly unknown.
 - SPEC states a numeric short-quote cap so validate can reject transcript dumps. The number is an architect assumption, written the same way in both docs, and is not an Arpan question.
-- Code license stays Apache-2.0, matching LICENSE and README.md. Talk content stays with the speakers and AI Engineer. Publish short quotes and links. Do not republish full transcripts. Ask AI Engineer before launch.
+- Code license stays Apache-2.0, matching LICENSE and README.md. The project claims no rights in talk content; rights remain with their respective rights holders. Publish short quotes and links. Do not republish full transcripts. Ask AI Engineer before launch.
 - SKILL.md YAML frontmatter follows https://agentskills.io/specification. Required: `name` (1–64 chars, lowercase letters, numbers, hyphens; no leading, trailing, or consecutive hyphens; matches the skill directory) and `description` (1–1024 chars, what it does and when to use it). Optional: `license`, `compatibility` (max 500 characters if present), `metadata` (string-to-string map), `allowed-tools` (experimental). Cursor-only keys such as `disable-model-invocation` are not required.
 
 ### Architecture
@@ -58,9 +61,9 @@ Both docs use the same labels.
 
 ## Constraints
 
-- C01 writes the two product docs only. This requirements file is coordination input, not a success-criterion file.
-- Requirements and architect seats are read-only. The developer is the only writer of `docs/SPEC.md` and `docs/ARCHITECTURE.md`.
-- Developer evidence is the two doc paths, a section checklist covering criteria 1–5, and broker file hashes. `git diff --check` not run means BLOCKED.
+- C01 delivers `docs/SPEC.md`, `docs/ARCHITECTURE.md`, and `docs/REQUIREMENTS.md`. These are the only editable files under Arpan's rework brief; no implementation or scaffolding is included.
+- Requirements and architect seats are read-only. The developer is the only writer of the three C01 documents for this rework.
+- Developer evidence is the three doc paths, a section/word-count checklist covering criteria 1–5, broker file hashes, and results from `git diff --check` and `git diff --stat`. `git diff --check` not run means BLOCKED.
 - SPEC and ARCHITECTURE use the same entity names, stage names, module names, storage assumption, license stance, and Page-gap labels.
 - Claims in a broker submission are truncated at 500 characters, with at most 30 claims. The file is the durable record.
 
