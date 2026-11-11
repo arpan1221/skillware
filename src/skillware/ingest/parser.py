@@ -242,15 +242,12 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
     while index < len(lines):
         line = lines[index]
         match = _META.match(line)
+        key = match[1].lower().strip().replace(" ", "_") if match else None
         if re.fullmatch(r"#{1,6}\s+Transcript\s*", line.strip(), re.I):
             pass
         elif line.startswith("# "):
             merge_metadata(parsed, {"title": line[2:].strip()}, origin="heading")
-        elif (
-            match
-            and ALIASES.get(match[1].lower().replace(" ", "_"), match[1].lower())
-            in METADATA_KEYS
-        ):
+        elif match and ALIASES.get(key, key) in METADATA_KEYS:
             merge_metadata(
                 parsed, {match[1].lower(): _scalar(match[2])}, origin="preamble"
             )
