@@ -32,7 +32,7 @@
     {
       "name": "uv-sync-locked",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "sync",
         "--locked"
       ],
@@ -41,12 +41,12 @@
         "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
       },
       "exit_code": 0,
-      "output": "Using CPython 3.12.3 interpreter at: /usr/bin/python3.12\nCreating virtual environment at: .venv\nResolved 19 packages in 37ms\n   Building skillware @ file:///tmp/skillware-c03-full-verify-4pwl5qvk\n      Built skillware @ file:///tmp/skillware-c03-full-verify-4pwl5qvk\nPrepared 1 package in 532ms\nInstalled 18 packages in 25ms\n + annotated-doc==0.0.6\n + annotated-types==0.8.0\n + iniconfig==2.3.1\n + markdown-it-py==4.3.0\n + mdurl==0.1.2\n + packaging==26.3\n + pluggy==1.7.0\n + pydantic==2.14.3\n + pydantic-core==2.50.4\n + pygments==2.21.0\n + pytest==9.2.0\n + rich==15.0.0\n + ruff==0.17.4\n + shellingham==1.5.4\n + skillware==0.1.0 (from file:///tmp/skillware-c03-full-verify-4pwl5qvk)\n + typer==0.29.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.5\n"
+      "output": "Using CPython 3.12.3 interpreter at: /usr/bin/python3.12\nCreating virtual environment at: .venv\nResolved 19 packages in 37ms\n   Building skillware @ file://<verification-scratch>\n      Built skillware @ file://<verification-scratch>\nPrepared 1 package in 532ms\nInstalled 18 packages in 25ms\n + annotated-doc==0.0.6\n + annotated-types==0.8.0\n + iniconfig==2.3.1\n + markdown-it-py==4.3.0\n + mdurl==0.1.2\n + packaging==26.3\n + pluggy==1.7.0\n + pydantic==2.14.3\n + pydantic-core==2.50.4\n + pygments==2.21.0\n + pytest==9.2.0\n + rich==15.0.0\n + ruff==0.17.4\n + shellingham==1.5.4\n + skillware==0.1.0 (from file://<verification-scratch>)\n + typer==0.29.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.5\n"
     },
     {
       "name": "pytest-normal",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "pytest",
         "-q"
@@ -61,7 +61,7 @@
     {
       "name": "pytest-ci",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "pytest",
         "-q"
@@ -79,7 +79,7 @@
     {
       "name": "ruff-check",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "ruff",
         "check",
@@ -95,7 +95,7 @@
     {
       "name": "ruff-format",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "ruff",
         "format",
@@ -112,7 +112,7 @@
     {
       "name": "cli-help",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "skillware",
         "--help"
@@ -127,7 +127,7 @@
     {
       "name": "ingest-help",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "skillware",
         "ingest",
@@ -143,7 +143,7 @@
     {
       "name": "fetch-help",
       "command": [
-        "/home/agent/.local/bin/uv",
+        "<uv>",
         "run",
         "skillware",
         "ingest",

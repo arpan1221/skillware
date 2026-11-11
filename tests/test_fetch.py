@@ -16,6 +16,62 @@ SECOND = "https://www.ai.engineer/talks/second.md"
 ROBOTS = "https://www.ai.engineer/robots.txt"
 
 
+@pytest.mark.parametrize("directive", ["Crawl-delay: 86400", "Request-rate: 1/86400"])
+def test_review_followup_excessive_robots_delay_blocks_origin(tmp_path, directive):
+    robots = Response(200, {}, f"User-agent: *\nAllow: /\n{directive}\n".encode())
+    wire = Recorded([(ROBOTS, robots)])
+    result = wire.fetch(tmp_path, [URL, SECOND])
+    assert result.outcome == StageOutcome.BLOCKED
+    assert result.counts["blocked"] == 2
+    assert [url for url, _, _ in wire.calls] == [ROBOTS]
+    assert wire.sleeps == []
+    assert json.loads(result.receipt_path.read_text())["outcome"] == "BLOCKED"
+
+
+@pytest.mark.parametrize("status", [429, 503])
+@pytest.mark.parametrize(
+    "retry", ["99999999", "Wed, 11 Nov 2026 01:00:00 GMT", "9" * 400]
+)
+def test_review_followup_excessive_retry_after_blocks_later_requests(
+    tmp_path, recorded, status, retry
+):
+    wire = Recorded(
+        [
+            (ROBOTS, recorded["robots"]),
+            (URL, Response(status, {"Retry-After": retry})),
+        ]
+    )
+    result = wire.fetch(tmp_path, [URL, SECOND])
+    assert result.outcome == StageOutcome.BLOCKED
+    assert result.counts["blocked"] == 2
+    assert [url for url, _, _ in wire.calls] == [ROBOTS, URL]
+    assert max(wire.sleeps, default=0) <= 300
+    assert all("required delay exceeds 300 seconds" in error for error in result.errors)
+
+
+def test_review_followup_delay_at_limit_is_respected(tmp_path, recorded):
+    robots = Response(200, {}, b"User-agent: *\nAllow: /\nCrawl-delay: 300\n")
+    wire = Recorded([(ROBOTS, robots), (URL, recorded["first"])])
+    assert wire.fetch(tmp_path, [URL]).outcome == StageOutcome.PASS
+    assert wire.sleeps == [300]
+
+
+def test_review_followup_excessive_configured_delay_blocks_before_transport(tmp_path):
+    wire = Recorded([])
+    result = fetch_transcripts(
+        tmp_path / "cache",
+        tmp_path,
+        [URL],
+        transport=wire.transport,
+        clock=wire.clock,
+        sleeper=wire.sleep,
+        now=wire.now,
+        min_interval=301,
+    )
+    assert result.outcome == StageOutcome.BLOCKED
+    assert wire.calls == wire.sleeps == []
+
+
 class Recorded:
     def __init__(self, entries):
         self.entries = list(entries)

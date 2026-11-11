@@ -84,7 +84,10 @@ not a dependency.
 constrains it to a broader operator-declared private root. An optional repeated
 `--url <url>` supplies AI Engineer transcript or discovery URLs. Requests identify
 Skillware in the User-Agent, respect `robots.txt`, and enforce rate limits,
-including source-provided crawl delays and retry delays. ETag and Last-Modified
+including source-provided crawl delays and retry delays. A required delay above
+300 seconds blocks that origin for the rest of the invocation; it is never
+shortened to send another request early. The operator may retry later.
+ETag and Last-Modified
 validators enable conditional requests. Unchanged content is skipped; completed
 cache entries survive interruption so a rerun resumes without losing progress.
 Robots agent groups match the longest case-insensitive prefix of the Skillware
@@ -173,6 +176,10 @@ are BLOCKED pending resolution.
 Unchanged source bytes cannot silently acquire conflicting attribution from a
 later manifest. Duplicate copies retain available fetch provenance; conflicting
 fetch records are BLOCKED rather than choosing one by filename.
+When a local duplicate has no sidecar, only an unambiguous existing fetch record
+for that identity and exact content hash is reused; conflicting history BLOCKS.
+An explicit valid sidecar takes precedence over historical records. Changed
+bytes never inherit another revision's acquisition record.
 Unchanged input is idempotent: the same IDs and evidence versions are reused.
 Changed transcript or fetch provenance creates a new version of that identity.
 

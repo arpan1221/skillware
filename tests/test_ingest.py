@@ -946,3 +946,61 @@ def test_conflicting_duplicate_fetch_provenance_blocks_without_rows(tmp_path):
     assert load_rows(db, Talk) == []
     assert load_rows(db, Segment) == []
     assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+
+
+@pytest.mark.parametrize("history_count", [1, 2])
+def test_review_followup_local_duplicate_preserves_or_blocks_history(
+    tmp_path, history_count
+):
+    cache, target, db = setup_input(tmp_path)
+    sidecar = target.with_suffix(".json")
+    for day in range(1, history_count + 1):
+        sidecar.write_text(
+            json.dumps(
+                {
+                    "source_url": "https://ai.engineer/source.md",
+                    "fetched_at": f"2026-11-0{day}T00:00:00Z",
+                    "content_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+                }
+            )
+        )
+        assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    before_talks = load_rows(db, Talk)
+    before_segments = load_rows(db, Segment)
+    sidecar.rename(tmp_path / "saved-sidecar.json")
+    target.rename(cache / "local-copy.md")
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert load_rows(db, Talk) == before_talks
+    assert load_rows(db, Segment) == before_segments
+    assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+    if history_count == 1:
+        assert result.outcome == StageOutcome.PASS
+        assert result.counts["unchanged"] == 1
+    else:
+        assert result.outcome == StageOutcome.BLOCKED
+        assert any("historical fetch provenance" in error for error in result.errors)
+
+
+def test_review_followup_changed_bytes_do_not_inherit_fetch_history(tmp_path):
+    cache, target, db = setup_input(tmp_path)
+    sidecar = target.with_suffix(".json")
+    sidecar.write_text(
+        json.dumps(
+            {
+                "source_url": "https://ai.engineer/source.md",
+                "fetched_at": "2026-11-01T00:00:00Z",
+                "content_sha256": hashlib.sha256(target.read_bytes()).hexdigest(),
+            }
+        )
+    )
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    (original,) = load_rows(db, Talk)
+    sidecar.rename(tmp_path / "saved-sidecar.json")
+    target.write_text(target.read_text() + "\nSynthetic changed revision.\n")
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    rows = load_rows(db, Talk)
+    assert len(rows) == 2
+    assert original in rows
+    revised = next(talk for talk in rows if talk.version != original.version)
+    assert revised.transcript_sha256 != original.transcript_sha256
+    assert revised.fetch_provenance is None

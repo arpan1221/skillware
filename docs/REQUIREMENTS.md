@@ -80,7 +80,7 @@ Both docs use the same labels.
 
 ## Constraints
 
-- C03 writes only the assigned ingest implementation, supporting fixtures/tests, and the required delta in these three documents. Do not edit LICENSE, workflows, secrets, local agent artifacts, or reviewed eval gold/rubrics/thresholds/baselines.
+- C03 writes only the assigned ingest implementation, supporting fixtures/tests, sanitized verification evidence under `evidence/`, and the required delta in these three documents. Evidence may record commands, outcomes and hashes, but must use neutral placeholders for private host paths. Do not edit LICENSE, workflows, secrets, local agent artifacts, or reviewed eval gold/rubrics/thresholds/baselines.
 - Developer evidence records assignment/attempt, exact base and branch, changed files, exact commands and exit codes, pass/fail/skip counts, diff checks, assumptions, deviations, and blockers. Include untracked files and mark every unrun check BLOCKED.
 - Use Agent World scoped messages and evidence. A developer submission is a claim, never completion; independent testers rerun checks and record a review. Command-free reviewers cite tester evidence.
 - SPEC and ARCHITECTURE use the same entity names, stage names, module names, storage assumption, license stance, and Page-gap labels.

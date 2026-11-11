@@ -347,7 +347,20 @@ def _plan(
             normalized["youtube_video_id"] = next(iter(distinct_ids))
         # last_checked_at is intentionally absent: a conditional cache check
         # does not produce a new evidence version.
-        fetch = candidate.fetch.model_dump(mode="json") if candidate.fetch else None
+        effective_fetch = candidate.fetch
+        if effective_fetch is None:
+            historical_fetches = {
+                old.fetch_provenance.model_dump_json(): old.fetch_provenance
+                for old in current
+                if old.transcript_sha256 == parsed.sha256 and old.fetch_provenance
+            }
+            if len(historical_fetches) > 1:
+                issues.append(
+                    Issue(StageOutcome.BLOCKED, "undecided historical fetch provenance")
+                )
+                continue
+            effective_fetch = next(iter(historical_fetches.values()), None)
+        fetch = effective_fetch.model_dump(mode="json") if effective_fetch else None
         version = _hash(
             _json(
                 {
@@ -384,7 +397,7 @@ def _plan(
             youtube_video_id=normalized.get("youtube_video_id"),
             transcript_path=str(source_path),
             transcript_sha256=parsed.sha256,
-            fetch_provenance=candidate.fetch,
+            fetch_provenance=effective_fetch,
             ingest_provenance={
                 "config_version": CONFIG_VERSION,
                 "input_sha256": parsed.sha256,

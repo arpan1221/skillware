@@ -32,6 +32,7 @@ USER_AGENT = (
 )
 DEFAULT_INDEX = "https://www.ai.engineer/"
 MAX_BYTES = 10 * 1024 * 1024
+MAX_DELAY_SECONDS = 300.0
 ALLOWED_HOSTS = frozenset({"ai.engineer", "www.ai.engineer"})
 
 
@@ -257,7 +258,10 @@ class _RobotsPolicy:
                             ):
                                 raise ValueError
                             interval = seconds / requests
-                        if not math.isfinite(interval) or interval < 0:
+                        if (
+                            not math.isfinite(interval)
+                            or not 0 <= interval <= MAX_DELAY_SECONDS
+                        ):
                             raise ValueError
                     except (ValueError, ZeroDivisionError) as error:
                         raise FetchBlocked(f"invalid robots {key}") from error
@@ -296,9 +300,23 @@ class _Client:
         self.sitemaps: list[str] = []
         self.requests = 0
         self.input_hashes: dict[str, str] = {}
+        self.blocked_origins: dict[str, str] = {}
+
+    def _check_delay(self, url: str, delay: float) -> None:
+        """Block an origin instead of waiting indefinitely or retrying too soon."""
+        parsed = urlsplit(url)
+        origin = f"{parsed.scheme}://{parsed.netloc}"
+        if origin in self.blocked_origins:
+            raise FetchBlocked(self.blocked_origins[origin])
+        if delay > MAX_DELAY_SECONDS:
+            message = f"required delay exceeds {MAX_DELAY_SECONDS:g} seconds"
+            self.blocked_origins[origin] = message
+            raise FetchBlocked(message)
 
     def _request(self, url: str, headers: dict[str, str], interval: float) -> Response:
+        self._check_delay(url, interval)
         delay = self.next_request - self.clock()
+        self._check_delay(url, delay)
         if delay > 0:
             self.sleeper(delay)
         self.requests += 1
@@ -319,12 +337,16 @@ class _Client:
                     ).total_seconds()
                 except (ValueError, TypeError, OverflowError):
                     wait = interval
+            # Positive numeric overflow is an excessive cooldown, not a
+            # malformed header that permits an ordinary short retry interval.
+            self._check_delay(url, wait)
             if not math.isfinite(wait):
                 wait = interval
             self.next_request = max(self.next_request, self.clock() + max(0, wait))
         return response
 
     def policy(self, url: str) -> tuple[_RobotsPolicy, float]:
+        self._check_delay(url, self.min_interval)
         parsed = urlsplit(url)
         origin = f"{parsed.scheme}://{parsed.netloc}"
         if origin not in self.robots:
@@ -344,7 +366,11 @@ class _Client:
                     lines = response.body.decode("utf-8-sig").splitlines()
                 except UnicodeDecodeError as error:
                     raise FetchBlocked("robots.txt is not UTF-8") from error
-            robot = _RobotsPolicy(lines)
+            try:
+                robot = _RobotsPolicy(lines)
+            except FetchBlocked as error:
+                self.blocked_origins[origin] = str(error)
+                raise
             self.input_hashes[robots_url] = hashlib.sha256(response.body).hexdigest()
             self.robots[origin] = robot
             self.sitemaps.extend(robot.sitemaps)

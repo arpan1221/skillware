@@ -128,14 +128,14 @@
       "stdout_stderr": "                                                                                \n Usage: skillware ingest fetch [OPTIONS]                                        \n                                                                                \n Retrieve AI Engineer Markdown with robots, pacing, and conditional caching.    \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --out         <path>       Private cache directory outside repositories.     \u2502\n\u2502 --root        <path>       Cache root; defaults to --out.                    \u2502\n\u2502 --url         <list[str]>  AI Engineer Markdown/index URL; repeatable;       \u2502\n\u2502                            default discovery.                                \u2502\n\u2502 --help        <bool>       Show this message and exit.                       \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
     },
     {
-      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache /Users/arpannookala/dev/skillware-c03/tests/fixtures/transcripts --db /tmp/skillware-c03-attempt3-cli-o5mvdt6t/claims.sqlite3",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache <repo>/tests/fixtures/transcripts --db /tmp/skillware-c03-attempt3-cli-o5mvdt6t/claims.sqlite3",
       "exit_code": 0,
       "expected_exit_code": 0,
       "status": "PASS",
       "stdout_stderr": "{\"counts\": {\"blocked\": 0, \"duplicates\": 0, \"failed\": 0, \"inputs\": 24, \"segments\": 48, \"talks\": 24, \"unchanged\": 0}, \"errors\": [], \"outcome\": \"PASS\", \"receipt_path\": \"/tmp/skillware-c03-attempt3-cli-o5mvdt6t/claims.sqlite3.ingest.json\"}\n"
     },
     {
-      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache /Users/arpannookala/dev/skillware-c03/tests/fixtures/transcripts --db /tmp/skillware-c03-attempt3-cli-o5mvdt6t/claims.sqlite3",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache <repo>/tests/fixtures/transcripts --db /tmp/skillware-c03-attempt3-cli-o5mvdt6t/claims.sqlite3",
       "exit_code": 0,
       "expected_exit_code": 0,
       "status": "PASS",
@@ -156,7 +156,7 @@
       "stdout_stderr": "{\"config_version\": \"c03-ingest-v3\", \"counts\": {}, \"errors\": [\"ingest requires --cache and --db\"], \"input_hashes\": {}, \"outcome\": \"BLOCKED\", \"output_refs\": [], \"receipt_path\": null, \"stage\": \"ingest\"}\n"
     },
     {
-      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch --out /Users/arpannookala/dev/skillware-c03/rejected-c03-attempt3-fetch",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch --out <repo>/rejected-c03-attempt3-fetch",
       "exit_code": 2,
       "expected_exit_code": 2,
       "status": "PASS",
