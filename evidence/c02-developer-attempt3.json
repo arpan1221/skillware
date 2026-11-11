@@ -1,0 +1,1029 @@
+{
+  "assignment_id": "b7fc7e94-ae52-4167-a401-c40d7871e35e",
+  "worker_id": "fda99a83-2bd7-45f3-97cc-b7bfc3573811",
+  "run_id": "b38c638c-7624-4617-a670-349a833d6ea8",
+  "parent_assignment_id": "d8d24d34-2cce-4967-a4e8-abed391af5c1",
+  "role": "developer",
+  "attempt": 3,
+  "branch": "aw/c02-scaffold",
+  "exact_base_sha": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e",
+  "head_sha": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e",
+  "origin_main_sha": "fd46d76ba7ab72c1335788dbcda024ca1dcc413e",
+  "generated_at": "2026-11-10T21:26:02.011Z",
+  "claim_status": "Local C02 scaffold gates PASS; developer claim only, pending independent tester/reviewer and council.",
+  "scope": "Resolve only the assumptions challenge: stable identity and exact immutable evidence version persistence. Existing scaffold retained; all six pipeline commands remain explicit exit-2 stubs.",
+  "challenge": {
+    "source": "Agent World inbox challenge received during attempt 3; verified against protected SPEC and ARCHITECTURE.",
+    "defect": "Store keyed records only by id and required a new ID for changed evidence, losing stable identity and exact version pinning.",
+    "resolution": "Composite (id,version) identities and foreign keys throughout; version pins survive model JSON; receipts pin entity type/id/version and require exact resolution."
+  },
+  "attempt3_changed_paths": [
+    "schemas/Claim.json",
+    "schemas/Cluster.json",
+    "schemas/RepoRef.json",
+    "schemas/Segment.json",
+    "schemas/Skill.json",
+    "src/skillware/schema.py",
+    "src/skillware/store.py",
+    "tests/test_schema.py",
+    "tests/test_store.py",
+    "evidence/c02-developer-attempt3.json"
+  ],
+  "attempt3_changes": [
+    "SQLite schema version 2 uses (id,version) primary keys for all six entities and deferred composite foreign keys for every relationship.",
+    "Segment/Claim scalar version fields, exact reference-version maps, and fact/relation/citation claim_version fields keep graph pins in serialized models; six schemas regenerated (Talk schema bytes unchanged).",
+    "EntityRef and Entity.ref represent exact typed evidence references. Store.get(...,version='1') is exact and never selects latest; Store.resolve resolves serialized pins.",
+    "PASS receipts require resolvable versioned output_refs. Same ID/new version can coexist; exact ID/version overwrites still fail and preserve prior evidence.",
+    "Regression tests cover two complete six-entity versions, old-reference preservation, all FK pin paths, absent versions, typed receipt pins, stable Talk counting, and rejection of legacy databases without rewriting them."
+  ],
+  "verification_environment": {
+    "UV_CACHE_DIR": "/tmp/skillware-c02-uv-cache",
+    "UV_OFFLINE": "1",
+    "UV_LINK_MODE": "copy",
+    "network": "Offline dependency and runtime verification; pytest additionally prohibits Python socket connections. No live models."
+  },
+  "checks": [
+    {
+      "phase": "pre-fix baseline",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true UV_LINK_MODE=copy bash -c 'uv sync && uv run pytest -q'",
+      "exit_code": 0,
+      "stdout_stderr": "Resolved 19 packages in 1ms\nChecked 18 packages in 0.49ms\n........................................................................ [ 97%]\n..                                                                       [100%]\n74 passed in 0.60s\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "pre-fix baseline",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true UV_LINK_MODE=copy bash -c 'uv run ruff check . && uv run ruff format --check .'",
+      "exit_code": 0,
+      "stdout_stderr": "All checks passed!\n22 files already formatted\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv sync --locked",
+      "exit_code": 0,
+      "stdout_stderr": "Resolved 19 packages in 1ms\nChecked 18 packages in 0.40ms\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "python3.12 - <<'PY'\nimport hashlib\nimport json\nimport subprocess\nfrom pathlib import Path\nbase = 'fd46d76ba7ab72c1335788dbcda024ca1dcc413e'\nprotected = []\nfor name in ('LICENSE', 'docs/SPEC.md', 'docs/ARCHITECTURE.md', 'docs/REQUIREMENTS.md'):\n    result = subprocess.run(['git', 'show', f'{base}:{name}'], capture_output=True, check=True)\n    current = Path(name).read_bytes()\n    protected.append({'path': name, 'exit_code': result.returncode, 'bytes_match_base': current == result.stdout, 'sha256': hashlib.sha256(current).hexdigest()})\nassert all(item['bytes_match_base'] for item in protected)\nold = json.loads(Path('evidence/c02-developer-attempt2.json').read_text())\nchanged = [artifact['path'] for artifact in old['artifact_hashes'] if hashlib.sha256(Path(artifact['path']).read_bytes()).hexdigest() != artifact['sha256']]\nallowed = {'src/skillware/schema.py', 'src/skillware/store.py', 'tests/test_schema.py', 'tests/test_store.py', 'schemas/Claim.json', 'schemas/Cluster.json', 'schemas/RepoRef.json', 'schemas/Segment.json', 'schemas/Skill.json', 'schemas/Talk.json'}\nassert set(changed) <= allowed, changed\nprint(json.dumps({'protected_files': protected, 'changed_since_attempt2': changed}, indent=2))\nPY",
+      "exit_code": 0,
+      "stdout_stderr": "{\n  \"protected_files\": [\n    {\n      \"path\": \"LICENSE\",\n      \"exit_code\": 0,\n      \"bytes_match_base\": true,\n      \"sha256\": \"cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30\"\n    },\n    {\n      \"path\": \"docs/SPEC.md\",\n      \"exit_code\": 0,\n      \"bytes_match_base\": true,\n      \"sha256\": \"6c95f3627b5755f147a8078b0ca53ffa099c366a634b7ce5e72cfd6ed723d460\"\n    },\n    {\n      \"path\": \"docs/ARCHITECTURE.md\",\n      \"exit_code\": 0,\n      \"bytes_match_base\": true,\n      \"sha256\": \"4e092f31847804f87a94f256b1e2b4199149c9f81b91a84452a08f907083ad92\"\n    },\n    {\n      \"path\": \"docs/REQUIREMENTS.md\",\n      \"exit_code\": 0,\n      \"bytes_match_base\": true,\n      \"sha256\": \"999198f202b3f940cfccf77f28b9b6b50a8ff686f8b60efbf23b20af026d99b3\"\n    }\n  ],\n  \"changed_since_attempt2\": [\n    \"schemas/Claim.json\",\n    \"schemas/Cluster.json\",\n    \"schemas/RepoRef.json\",\n    \"schemas/Segment.json\",\n    \"schemas/Skill.json\",\n    \"src/skillware/schema.py\",\n    \"src/skillware/store.py\",\n    \"tests/test_schema.py\",\n    \"tests/test_store.py\"\n  ]\n}\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy bash -c 'uv sync && uv run pytest -q'",
+      "stdout_stderr": "Resolved 19 packages in 0.94ms\nChecked 18 packages in 0.42ms\n........................................................................ [ 69%]\n...............................                                          [100%]\n103 passed in 0.74s\n",
+      "status": "PASS",
+      "exit_code": 0,
+      "test_counts": {
+        "passed": 103,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      }
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy bash -c 'uv run ruff check . && uv run ruff format --check .'",
+      "exit_code": 0,
+      "stdout_stderr": "All checks passed!\n22 files already formatted\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware --help",
+      "exit_code": 0,
+      "stdout_stderr": "                                                                                \n Usage: skillware [OPTIONS] COMMAND [ARGS]...                                   \n                                                                                \n Build evidence-backed Agent Skills from local conference transcripts.          \n                                                                                \n╭─ Options ────────────────────────────────────────────────────────────────────╮\n│ --help        <bool>  Show this message and exit.                            │\n╰──────────────────────────────────────────────────────────────────────────────╯\n╭─ Commands ───────────────────────────────────────────────────────────────────╮\n│ ingest      Read local transcripts and source metadata.                      │\n│ extract     Propose atomic claims and repository mentions.                   │\n│ cluster     Assess scoped agreement and opposition across talks.             │\n│ synthesize  Draft skills from reviewed evidence.                             │\n│ validate    Validate the complete candidate skill pack.                      │\n│ eval        Evaluate against reviewed labels and criteria.                   │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "git diff --check",
+      "exit_code": 0,
+      "stdout_stderr": "",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "git diff --stat",
+      "exit_code": 0,
+      "stdout_stderr": " README.md | 30 ++++++++++++++++++++++++------\n 1 file changed, 24 insertions(+), 6 deletions(-)\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "git branch --show-current && git rev-parse HEAD && git rev-parse origin/main",
+      "exit_code": 0,
+      "stdout_stderr": "aw/c02-scaffold\nfd46d76ba7ab72c1335788dbcda024ca1dcc413e\nfd46d76ba7ab72c1335788dbcda024ca1dcc413e\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware ingest",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "ingest: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware extract",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "extract: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware cluster",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "cluster: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware synthesize",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "synthesize: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware validate",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "validate: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy uv run skillware eval",
+      "exit_code": 2,
+      "expected_exit_code": 2,
+      "stdout_stderr": "eval: not implemented\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "uv --version && UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run python -c 'import sys, importlib.metadata as m; print(sys.version); print({p: m.version(p) for p in (\"pydantic\", \"typer\", \"pytest\", \"ruff\")})'",
+      "exit_code": 0,
+      "stdout_stderr": "uv 0.12.19 (aarch64-unknown-linux-gnu)\n3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]\n{'pydantic': '2.14.3', 'typer': '0.29.0', 'pytest': '9.2.0', 'ruff': '0.17.4'}\n",
+      "status": "PASS"
+    },
+    {
+      "phase": "final",
+      "command": "python3.12 - <<'PY'\nimport hashlib\nimport json\nimport shlex\nimport subprocess\nfrom pathlib import Path\n\nbase = 'fd46d76ba7ab72c1335788dbcda024ca1dcc413e'\nold = json.loads(Path('evidence/c02-developer-attempt2.json').read_text())\nevidence_path = 'evidence/c02-developer-attempt3.json'\nallowed = set(old['changed_paths_from_exact_base']) | {evidence_path}\n\ndef run(args):\n    result = subprocess.run(args, capture_output=True, text=True)\n    return {'command': shlex.join(args), 'exit_code': result.returncode, 'stdout': result.stdout, 'stderr': result.stderr}\n\nuntracked = run(['git', 'ls-files', '--others', '--exclude-standard', '-z'])\nassert untracked['exit_code'] == 0\npaths = [path for path in untracked['stdout'].split('\\0') if path]\nassert set(paths) <= allowed, sorted(set(paths) - allowed)\nchecks = []\nfor path in paths:\n    check = run(['git', 'diff', '--no-index', '--check', '--', '/dev/null', path])\n    assert check['exit_code'] in (0, 1) and not check['stdout'] and not check['stderr'], check\n    check['status'] = 'PASS'\n    check['interpretation'] = 'Exit 1 indicates a new-file diff; zero whitespace diagnostics.'\n    stat = run(['git', 'diff', '--no-index', '--stat', '--', '/dev/null', path])\n    assert stat['exit_code'] in (0, 1) and not stat['stderr'], stat\n    checks.extend((check, stat))\ntracked = run(['git', 'diff', '--name-only', base])\nassert tracked['exit_code'] == 0\nchanged = sorted(set(tracked['stdout'].splitlines()) | set(paths))\nassert set(changed) <= allowed\nartifacts = []\nfor path in changed:\n    if path == evidence_path:\n        continue\n    contents = Path(path).read_bytes()\n    artifacts.append({'path': path, 'bytes': len(contents), 'sha256': hashlib.sha256(contents).hexdigest()})\nignored = run(['git', 'check-ignore', '.skillware/probe', 'data/probe', '.cursor/probe', '.grok/probe', '.env.probe'])\nassert ignored['exit_code'] == 0 and len(ignored['stdout'].splitlines()) == 5\nfor package in ('ingest', 'extract', 'cluster', 'synth', 'links', 'evals'):\n    assert Path('src/skillware', package, '__init__.py').is_file()\nassert Path('data').is_dir() and Path('skills/.gitkeep').is_file()\nprint(json.dumps({'changed_paths_from_exact_base': changed, 'artifact_hashes': artifacts, 'untracked_verification': {'count': len(paths), 'whitespace_diagnostics': 0, 'checks': checks}, 'ignore_check': ignored, 'layout_check': 'PASS; six package directories, ignored data/, skills/.gitkeep exist'}, indent=2))\nPY",
+      "exit_code": 0,
+      "status": "PASS",
+      "stdout_stderr": "Detailed JSON output is preserved as changed_paths_from_exact_base, artifact_hashes, untracked_verification, ignore_check and layout_check in this report."
+    }
+  ],
+  "helper_checks": [
+    {
+      "provenance": "developer schema helper, not independent validation",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run ruff format src/skillware/schema.py tests/test_schema.py && UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run python -m skillware.schema && UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run pytest -q tests/test_schema.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "test_counts": {
+        "passed": 53,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "provenance": "developer store helper initial regression development",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync pytest -q tests/test_store.py",
+      "exit_code": 1,
+      "status": "FAIL",
+      "test_counts": {
+        "passed": 33,
+        "failed": 2,
+        "skipped": 0
+      },
+      "resolution": "Two new missing-version fixtures also violated reciprocal links, which rejected earlier. Isolated missing-target fixtures without changing the expected FOREIGN KEY rejection. Separate reciprocal-version mismatch coverage retained."
+    },
+    {
+      "provenance": "developer store helper intermediate",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync pytest -q tests/test_store.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "test_counts": {
+        "passed": 35,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "provenance": "developer store helper final",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync pytest -q tests/test_store.py",
+      "exit_code": 0,
+      "status": "PASS",
+      "test_counts": {
+        "passed": 38,
+        "failed": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "provenance": "developer store helper",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync ruff format tests/test_store.py",
+      "exit_codes": [
+        0,
+        0,
+        0
+      ],
+      "status": "PASS"
+    },
+    {
+      "provenance": "developer store helper",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync ruff check tests/test_store.py && UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=true uv run --no-sync ruff format --check tests/test_store.py",
+      "exit_codes": [
+        0,
+        0
+      ],
+      "status": "PASS"
+    },
+    {
+      "provenance": "root scoped implementation check",
+      "command": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run ruff format src/skillware/store.py && UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 uv run ruff check src/skillware/store.py",
+      "exit_code": 0,
+      "status": "PASS"
+    }
+  ],
+  "test_totals_final": {
+    "passed": 103,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0
+  },
+  "cli_verification": {
+    "help_exit_code": 0,
+    "command_order": [
+      "ingest",
+      "extract",
+      "cluster",
+      "synthesize",
+      "validate",
+      "eval"
+    ],
+    "stub_checks": {
+      "passed": 6,
+      "failed": 0,
+      "skipped": 0
+    },
+    "required_stub_exit_code": 2
+  },
+  "protected_files": [
+    {
+      "path": "LICENSE",
+      "exit_code": 0,
+      "bytes_match_base": true,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "docs/SPEC.md",
+      "exit_code": 0,
+      "bytes_match_base": true,
+      "sha256": "6c95f3627b5755f147a8078b0ca53ffa099c366a634b7ce5e72cfd6ed723d460"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "exit_code": 0,
+      "bytes_match_base": true,
+      "sha256": "4e092f31847804f87a94f256b1e2b4199149c9f81b91a84452a08f907083ad92"
+    },
+    {
+      "path": "docs/REQUIREMENTS.md",
+      "exit_code": 0,
+      "bytes_match_base": true,
+      "sha256": "999198f202b3f940cfccf77f28b9b6b50a8ff686f8b60efbf23b20af026d99b3"
+    }
+  ],
+  "assumptions": [
+    "A1 remains configurable local SQLite at .skillware/claims.sqlite3; all tests use disposable temporary databases.",
+    "Stable entity id identifies the same source/evidence item across versions; the pair (id,version) is immutable. Stable talk counts use talk.id, not the version pair.",
+    "A given relationship selects one exact version per stable referenced id. Exact version 1 is the documented default for Store.get; no automatic latest-version selection or pin inference occurs.",
+    "C02 is the initial scaffold contract; internal entity serialization schema_version stays 1, while SQLite storage schema version increments to 2 for the incompatible physical key layout.",
+    "C01 delivery-only limits are historical; user C02 authorization governs the scaffold and named CI workflow.",
+    "Publication-level source deduplication, recount/relabeling, downstream invalidation, real-corpus quality and production CLI adapters remain future pipeline stage work."
+  ],
+  "deviations_and_resolutions": [
+    "The previous overwrite test incorrectly rejected a new version of the same stable ID. It now rejects modified bytes at the same ID/version, with added positive multiple-version and immutable-prior-version tests. No test acceptance criterion was weakened.",
+    "Required version pins extend schema fields while preserving all SPEC fields and six entity names. Generated schemas and structural synthetic tests were updated with the implementation.",
+    "SQLite schema version 1 databases are rejected without rewriting or migration. No private .skillware database was accessed.",
+    "One intermediate new-test run had 2 fixture-setup failures; corrected by isolating the intended missing-version condition. Final full suite passes all 103 tests.",
+    "Tracked git diff reports only README because the scaffold remains untracked under the no-commit/no-staging workflow. Per-file no-index checks/stats account for every untracked artifact."
+  ],
+  "implementation_blockers": [],
+  "unrun_checks": [
+    {
+      "check": "Independent tester/reviewer and council verdicts for attempt 3",
+      "status": "BLOCKED",
+      "reason": "Pending downstream Agent World roles. Developer assistance and world_submit are claims, not independent acceptance."
+    },
+    {
+      "check": "Hosted GitHub Actions workflow execution",
+      "status": "BLOCKED",
+      "reason": "No push/PR/publication authorized. Configured workflow unchanged; its required commands pass locally."
+    },
+    {
+      "check": "Live model, real corpus and gold-label quality evaluations",
+      "status": "BLOCKED",
+      "reason": "Outside scaffold scope; no model/network/evaluation changes authorized. No quality score claimed."
+    }
+  ],
+  "safety_and_scope": [
+    "No commit, staging, push, PR, merge, repository setting change, permission widening or publication.",
+    "No environment/credential files read; no API keys, paid API, Anthropic credits, provider fallback, or live model.",
+    "LICENSE and three protected docs exactly match the supplied base. CLI, adapter, CI, package metadata/lock and contributor instructions unchanged since attempt 2.",
+    "Gold labels, rubrics, thresholds and baselines untouched. Regression cases are synthetic storage/schema contract tests."
+  ],
+  "handoff": {
+    "environment": "UV_CACHE_DIR=/tmp/skillware-c02-uv-cache UV_OFFLINE=1 UV_LINK_MODE=copy",
+    "required": "Independent tester reruns gates and records world_review. Command-free reviewer cites tester evidence. Developer does not record a self-acceptance verdict.",
+    "human_gate": "Arpan's PR approval is a later merge gate, not a C02 scaffold success criterion."
+  },
+  "changed_paths_from_exact_base": [
+    ".github/workflows/ci.yml",
+    ".gitignore",
+    ".python-version",
+    "AGENTS.md",
+    "CONTRIBUTING.md",
+    "README.md",
+    "evidence/c02-developer-attempt1.json",
+    "evidence/c02-developer-attempt2.json",
+    "evidence/c02-developer-attempt3.json",
+    "pyproject.toml",
+    "schemas/Claim.json",
+    "schemas/Cluster.json",
+    "schemas/RepoRef.json",
+    "schemas/Segment.json",
+    "schemas/Skill.json",
+    "schemas/Talk.json",
+    "skills/.gitkeep",
+    "src/skillware/__init__.py",
+    "src/skillware/cli.py",
+    "src/skillware/cluster/__init__.py",
+    "src/skillware/evals/__init__.py",
+    "src/skillware/extract/__init__.py",
+    "src/skillware/extract/adapters.py",
+    "src/skillware/ingest/__init__.py",
+    "src/skillware/links/__init__.py",
+    "src/skillware/schema.py",
+    "src/skillware/store.py",
+    "src/skillware/synth/__init__.py",
+    "tests/conftest.py",
+    "tests/test_adapters.py",
+    "tests/test_cli.py",
+    "tests/test_schema.py",
+    "tests/test_store.py",
+    "uv.lock"
+  ],
+  "artifact_hashes": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 816,
+      "sha256": "e6cf361e4f2dbd2792fdcee3902f53181d681a39ec760743453048241f53718b"
+    },
+    {
+      "path": ".gitignore",
+      "bytes": 165,
+      "sha256": "b71450ea5ddd2d4e8f23f681d36f403e35be2816321d58c36b3e978172fd8b8e"
+    },
+    {
+      "path": ".python-version",
+      "bytes": 5,
+      "sha256": "7b55f8e67b5623c4bef3fa691288da9437d79d3aba156de48d481db32ac7d16d"
+    },
+    {
+      "path": "AGENTS.md",
+      "bytes": 2078,
+      "sha256": "66b4bec967ffda41484e2056995a8bdbcb282f99b85d6758edbb27d8c629c55e"
+    },
+    {
+      "path": "CONTRIBUTING.md",
+      "bytes": 2236,
+      "sha256": "ae869ddfe725e92b7dadf0c28e660537b54389e06566c8df884319df4e749a97"
+    },
+    {
+      "path": "README.md",
+      "bytes": 1391,
+      "sha256": "dfe38434f4cb74e43c9235ba4d859cdc8dee7506e746b2e623d441acbe259731"
+    },
+    {
+      "path": "evidence/c02-developer-attempt1.json",
+      "bytes": 34924,
+      "sha256": "e0d228cd6a3da7cfffc28fb43290a645f7a707fbe41adb1353f46a4a0536514e"
+    },
+    {
+      "path": "evidence/c02-developer-attempt2.json",
+      "bytes": 52687,
+      "sha256": "7ea41b5454dc5c1a6241a638a4965b97001f377f86f01ba45f54a793f73472b1"
+    },
+    {
+      "path": "pyproject.toml",
+      "bytes": 752,
+      "sha256": "2ba7bf24546639f3c050d7c0ed4f3b4c27bffb616c5eb659446678484b57960a"
+    },
+    {
+      "path": "schemas/Claim.json",
+      "bytes": 3847,
+      "sha256": "c0d3d210e6f4af674c36236a8666c175c8e664a365d5fa59dbe6423a7bd431b0"
+    },
+    {
+      "path": "schemas/Cluster.json",
+      "bytes": 4034,
+      "sha256": "7e26e5daaf3b8733ffac051ceb83951ec18f0398c10c311e16db9741aa3de85b"
+    },
+    {
+      "path": "schemas/RepoRef.json",
+      "bytes": 4560,
+      "sha256": "7445d0fb90e1667c84319fb3bb4f3d754b16471791528282984a95bcfe1a4b8f"
+    },
+    {
+      "path": "schemas/Segment.json",
+      "bytes": 2369,
+      "sha256": "507d98c8004786910f2ab4a5103065c22c9451b6ef7b1ffd236702cbfd6fc522"
+    },
+    {
+      "path": "schemas/Skill.json",
+      "bytes": 4092,
+      "sha256": "9ffefeb1b9d66b15b8b43fd88a69b62d518f235ed797396828e22cc70457ba8a"
+    },
+    {
+      "path": "schemas/Talk.json",
+      "bytes": 2073,
+      "sha256": "947600930d49557055c7ee410284f3fe112fc6fa0c6315df4781cb7a1d16696a"
+    },
+    {
+      "path": "skills/.gitkeep",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "src/skillware/__init__.py",
+      "bytes": 55,
+      "sha256": "ea35be46521b47a38714d8f8adeea9dbd3c45dceff9939e04d3337ba69eb659d"
+    },
+    {
+      "path": "src/skillware/cli.py",
+      "bytes": 1409,
+      "sha256": "08433e6dcb3c9d149471e84aa9998ff543b801b7e065ea023568d60144612d28"
+    },
+    {
+      "path": "src/skillware/cluster/__init__.py",
+      "bytes": 76,
+      "sha256": "44122e4b5f4efaf9f0e10e994a48e2b73c8794b1611017ed8ed443b5cc45a491"
+    },
+    {
+      "path": "src/skillware/evals/__init__.py",
+      "bytes": 79,
+      "sha256": "e1d7ed878dcc463a815330b46042c5d33b52cc7ad4a0455da47be81fef1732b9"
+    },
+    {
+      "path": "src/skillware/extract/__init__.py",
+      "bytes": 68,
+      "sha256": "18cd9e6c91ae791bfa5ada7cb2010f2b228550642437b24c607cfb2d2bcf71d2"
+    },
+    {
+      "path": "src/skillware/extract/adapters.py",
+      "bytes": 2095,
+      "sha256": "487b0334f2256901c74c7753114e4103221a0ae6623428b39a93fb9df8f63b3f"
+    },
+    {
+      "path": "src/skillware/ingest/__init__.py",
+      "bytes": 79,
+      "sha256": "c59ee1a22eeaa1e1cc612b6e72f58a487ef11d808c2c567317248cac8f6530dd"
+    },
+    {
+      "path": "src/skillware/links/__init__.py",
+      "bytes": 79,
+      "sha256": "419bb469c97417e5bb1c6ab2d3a103e33fb83eb5c3c2287453a2ba7a342c7b13"
+    },
+    {
+      "path": "src/skillware/schema.py",
+      "bytes": 12890,
+      "sha256": "ecb752c839de358c29de3673d0523f0654860d0cfcfaf374fa7272b2f65271b3"
+    },
+    {
+      "path": "src/skillware/store.py",
+      "bytes": 17740,
+      "sha256": "88c3b206c22706967646cc4cb59a75889b90ff3c263a3f6f97a00ff164a0a64d"
+    },
+    {
+      "path": "src/skillware/synth/__init__.py",
+      "bytes": 56,
+      "sha256": "c03c28a80dab6fc2bddfd429318357f21cf537baa50d38b69f7213894da7d82c"
+    },
+    {
+      "path": "tests/conftest.py",
+      "bytes": 581,
+      "sha256": "ed170368679c14cbeb3bdba92b5734483a61e0be6aac3dbe7bc1dad5224c72eb"
+    },
+    {
+      "path": "tests/test_adapters.py",
+      "bytes": 1632,
+      "sha256": "003253f46479c330109610d8cf0a714d94c6adb259583571288101593676a815"
+    },
+    {
+      "path": "tests/test_cli.py",
+      "bytes": 808,
+      "sha256": "27c68e3be7e56ae5d5f60be4c4ada748299ea45676b5ecd8eda66a92a7977747"
+    },
+    {
+      "path": "tests/test_schema.py",
+      "bytes": 14874,
+      "sha256": "3b7617289194b16711e9884611b4a958dbfcc39af76ae9370df15b1d10576a83"
+    },
+    {
+      "path": "tests/test_store.py",
+      "bytes": 32349,
+      "sha256": "dadeecfd244c8c7ae5509f3922caa4da124e3b237cd9a2ef70847abe723db5a0"
+    },
+    {
+      "path": "uv.lock",
+      "bytes": 25038,
+      "sha256": "cd1fb7b712fabaeaf7cbdf2c978b09a79b6eb2cfcaf99716fc56ebed2660dbfa"
+    }
+  ],
+  "untracked_verification": {
+    "count": 33,
+    "whitespace_diagnostics": 0,
+    "checks": [
+      {
+        "command": "git diff --no-index --check -- /dev/null .github/workflows/ci.yml",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null .github/workflows/ci.yml",
+        "exit_code": 1,
+        "stdout": " /dev/null => .github/workflows/ci.yml | 33 +++++++++++++++++++++++++++++++++\n 1 file changed, 33 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null .gitignore",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null .gitignore",
+        "exit_code": 1,
+        "stdout": " /dev/null => .gitignore | 18 ++++++++++++++++++\n 1 file changed, 18 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null .python-version",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null .python-version",
+        "exit_code": 1,
+        "stdout": " /dev/null => .python-version | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null AGENTS.md",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null AGENTS.md",
+        "exit_code": 1,
+        "stdout": " /dev/null => AGENTS.md | 33 +++++++++++++++++++++++++++++++++\n 1 file changed, 33 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null CONTRIBUTING.md",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null CONTRIBUTING.md",
+        "exit_code": 1,
+        "stdout": " /dev/null => CONTRIBUTING.md | 42 ++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 42 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null evidence/c02-developer-attempt1.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null evidence/c02-developer-attempt1.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => evidence/c02-developer-attempt1.json | 907 ++++++++++++++++++++++\n 1 file changed, 907 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null evidence/c02-developer-attempt2.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null evidence/c02-developer-attempt2.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => evidence/c02-developer-attempt2.json | 1165 +++++++++++++++++++++\n 1 file changed, 1165 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null evidence/c02-developer-attempt3.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null evidence/c02-developer-attempt3.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => evidence/c02-developer-attempt3.json | 343 ++++++++++++++++++++++\n 1 file changed, 343 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null pyproject.toml",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null pyproject.toml",
+        "exit_code": 1,
+        "stdout": " /dev/null => pyproject.toml | 38 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 38 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/Claim.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/Claim.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/Claim.json | 172 ++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 172 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/Cluster.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/Cluster.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/Cluster.json | 182 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 182 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/RepoRef.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/RepoRef.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/RepoRef.json | 218 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 218 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/Segment.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/Segment.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/Segment.json | 120 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 120 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/Skill.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/Skill.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/Skill.json | 198 ++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 198 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null schemas/Talk.json",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null schemas/Talk.json",
+        "exit_code": 1,
+        "stdout": " /dev/null => schemas/Talk.json | 112 +++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 112 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null skills/.gitkeep",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null skills/.gitkeep",
+        "exit_code": 1,
+        "stdout": " /dev/null => skills/.gitkeep | 0\n 1 file changed, 0 insertions(+), 0 deletions(-)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/cli.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/cli.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/cli.py | 64 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 64 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/cluster/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/cluster/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/cluster/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/evals/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/evals/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/evals/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/extract/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/extract/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/extract/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/extract/adapters.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/extract/adapters.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/extract/adapters.py | 63 ++++++++++++++++++++++++++\n 1 file changed, 63 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/ingest/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/links/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/links/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/links/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/schema.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/schema.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/schema.py | 362 +++++++++++++++++++++++++++++++++++\n 1 file changed, 362 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/store.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/store.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/store.py | 489 ++++++++++++++++++++++++++++++++++++\n 1 file changed, 489 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/synth/__init__.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/synth/__init__.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => src/skillware/synth/__init__.py | 1 +\n 1 file changed, 1 insertion(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/conftest.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/conftest.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => tests/conftest.py | 17 +++++++++++++++++\n 1 file changed, 17 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_adapters.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_adapters.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => tests/test_adapters.py | 43 +++++++++++++++++++++++++++++++++++++\n 1 file changed, 43 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_cli.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_cli.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => tests/test_cli.py | 27 +++++++++++++++++++++++++++\n 1 file changed, 27 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_schema.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_schema.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => tests/test_schema.py | 424 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 424 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_store.py",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_store.py",
+        "exit_code": 1,
+        "stdout": " /dev/null => tests/test_store.py | 766 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 766 insertions(+)\n",
+        "stderr": ""
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null uv.lock",
+        "exit_code": 1,
+        "stdout": "",
+        "stderr": "",
+        "status": "PASS",
+        "interpretation": "Exit 1 indicates a new-file diff; zero whitespace diagnostics."
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null uv.lock",
+        "exit_code": 1,
+        "stdout": " /dev/null => uv.lock | 259 +++++++++++++++++++++++++++++++++++++++++++++++++++\n 1 file changed, 259 insertions(+)\n",
+        "stderr": ""
+      }
+    ]
+  },
+  "ignore_check": {
+    "command": "git check-ignore .skillware/probe data/probe .cursor/probe .grok/probe .env.probe",
+    "exit_code": 0,
+    "stdout": ".skillware/probe\ndata/probe\n.cursor/probe\n.grok/probe\n.env.probe\n",
+    "stderr": ""
+  },
+  "layout_check": "PASS; six package directories, ignored data/, skills/.gitkeep exist",
+  "artifact_hash_note": "All current artifacts except this report are hashed here. This report is broker-hashed by world_submit; final whitespace is checked after report serialization to avoid a self-hash cycle."
+}

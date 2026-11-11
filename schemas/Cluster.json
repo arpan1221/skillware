@@ -1,0 +1,182 @@
+{
+  "$defs": {
+    "ClusterLabel": {
+      "enum": [
+        "consensus",
+        "contested",
+        "insufficient"
+      ],
+      "title": "ClusterLabel",
+      "type": "string"
+    },
+    "EvidenceRelation": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_id": {
+          "minLength": 1,
+          "title": "Claim Id",
+          "type": "string"
+        },
+        "claim_version": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Claim Version",
+          "type": "string"
+        },
+        "rationale": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Rationale",
+          "type": "string"
+        },
+        "relation": {
+          "enum": [
+            "support",
+            "oppose",
+            "unresolved"
+          ],
+          "title": "Relation",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/StageOutcome",
+          "default": "BLOCKED"
+        }
+      },
+      "required": [
+        "claim_id",
+        "claim_version",
+        "relation",
+        "rationale"
+      ],
+      "title": "EvidenceRelation",
+      "type": "object"
+    },
+    "StageOutcome": {
+      "description": "Unrun or missing checks are BLOCKED, never an implicit PASS.",
+      "enum": [
+        "PASS",
+        "FAIL",
+        "BLOCKED"
+      ],
+      "title": "StageOutcome",
+      "type": "string"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "assessment_status": {
+      "$ref": "#/$defs/StageOutcome",
+      "default": "BLOCKED"
+    },
+    "claim_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Claim Ids",
+      "type": "array"
+    },
+    "claim_versions": {
+      "additionalProperties": {
+        "minLength": 1,
+        "pattern": "\\S",
+        "type": "string"
+      },
+      "propertyNames": {
+        "minLength": 1
+      },
+      "title": "Claim Versions",
+      "type": "object"
+    },
+    "clustering_config_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Clustering Config Sha256",
+      "type": "string"
+    },
+    "distinct_opposing_talk_count": {
+      "minimum": 0,
+      "title": "Distinct Opposing Talk Count",
+      "type": "integer"
+    },
+    "distinct_supporting_talk_count": {
+      "minimum": 0,
+      "title": "Distinct Supporting Talk Count",
+      "type": "integer"
+    },
+    "distinct_talk_count": {
+      "minimum": 0,
+      "title": "Distinct Talk Count",
+      "type": "integer"
+    },
+    "evidence_relations": {
+      "items": {
+        "$ref": "#/$defs/EvidenceRelation"
+      },
+      "title": "Evidence Relations",
+      "type": "array"
+    },
+    "id": {
+      "minLength": 1,
+      "title": "Id",
+      "type": "string"
+    },
+    "label": {
+      "$ref": "#/$defs/ClusterLabel",
+      "default": "insufficient"
+    },
+    "opposing_claim_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Opposing Claim Ids",
+      "type": "array"
+    },
+    "proposition": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Proposition",
+      "type": "string"
+    },
+    "rationale": {
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Rationale",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "supporting_claim_ids": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "title": "Supporting Claim Ids",
+      "type": "array"
+    },
+    "version": {
+      "default": "1",
+      "minLength": 1,
+      "pattern": "\\S",
+      "title": "Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "id",
+    "proposition",
+    "distinct_talk_count",
+    "distinct_supporting_talk_count",
+    "distinct_opposing_talk_count",
+    "rationale",
+    "clustering_config_sha256"
+  ],
+  "title": "Cluster",
+  "type": "object"
+}
