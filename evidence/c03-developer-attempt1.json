@@ -1,0 +1,962 @@
+{
+  "assignment_id": "c4ec3194-c53c-4f64-a80b-6e5fbbacd0df",
+  "worker_id": "fe59b550-7ddc-48a4-b7f7-94d3d0108779",
+  "parent_assignment_id": "7a27e0ec-b6c6-44b0-84f3-8d3d5e4fbb63",
+  "run_id": "f1fe25a7-e7b8-48ae-91cd-266058a7e98a",
+  "role": "developer",
+  "attempt": 1,
+  "branch": "aw/c03-ingest",
+  "exact_base_sha": "89375493eb8de2d446288b413652881c5c04b5bb",
+  "head_sha": "89375493eb8de2d446288b413652881c5c04b5bb",
+  "claim_status": "C03 implementation and offline required gates PASS; developer claim only, pending independent tester/reviewer. world_submit is not completion.",
+  "scope": "AI Engineer Markdown fetcher, private cache, local ingest, provenance and identity/versioning, CLI, required three-doc delta, recorded synthetic fixtures.",
+  "changed_files": [
+    "docs/ARCHITECTURE.md",
+    "docs/REQUIREMENTS.md",
+    "docs/SPEC.md",
+    "schemas/Talk.json",
+    "src/skillware/cli.py",
+    "src/skillware/ingest/__init__.py",
+    "src/skillware/ingest/fetch.py",
+    "src/skillware/ingest/parser.py",
+    "src/skillware/ingest/paths.py",
+    "src/skillware/ingest/pipeline.py",
+    "src/skillware/schema.py",
+    "tests/fixtures/http/robots_rules.json",
+    "tests/fixtures/http/transcripts.json",
+    "tests/fixtures/transcripts/talk-01.md",
+    "tests/fixtures/transcripts/talk-02.md",
+    "tests/fixtures/transcripts/talk-03.md",
+    "tests/fixtures/transcripts/talk-04.md",
+    "tests/fixtures/transcripts/talk-05.md",
+    "tests/fixtures/transcripts/talk-06.md",
+    "tests/fixtures/transcripts/talk-07.md",
+    "tests/fixtures/transcripts/talk-08.md",
+    "tests/fixtures/transcripts/talk-09.md",
+    "tests/fixtures/transcripts/talk-10.md",
+    "tests/fixtures/transcripts/talk-11.md",
+    "tests/fixtures/transcripts/talk-12.md",
+    "tests/fixtures/transcripts/talk-13.md",
+    "tests/fixtures/transcripts/talk-14.md",
+    "tests/fixtures/transcripts/talk-15.md",
+    "tests/fixtures/transcripts/talk-16.md",
+    "tests/fixtures/transcripts/talk-17.md",
+    "tests/fixtures/transcripts/talk-18.md",
+    "tests/fixtures/transcripts/talk-19.md",
+    "tests/fixtures/transcripts/talk-20.md",
+    "tests/fixtures/transcripts/talk-21.md",
+    "tests/fixtures/transcripts/talk-22.md",
+    "tests/fixtures/transcripts/talk-23.md",
+    "tests/fixtures/transcripts/talk-24.md",
+    "tests/test_cli.py",
+    "tests/test_fetch.py",
+    "tests/test_fetch_provenance.py",
+    "tests/test_ingest.py",
+    "tests/test_ingest_e2e.py",
+    "tests/test_ingest_paths.py",
+    "evidence/c03-developer-attempt1.json"
+  ],
+  "implementation": [
+    "Typer ingest fetch supports HTTPS ai.engineer/www.ai.engineer transcript URLs, repeated --url for Markdown or HTML/XML/llms indexes, default homepage/sitemap/llms.txt discovery of advertised .md links.",
+    "Identifiable User-Agent; robots most-specific matching groups, longest matching path rule, Allow ties, wildcard/end anchors and percent normalization; crawl delay/request rate, minimum one-second spacing, Retry-After; redirect targets checked before requests.",
+    "Conditional ETag/Last-Modified revalidation; 304 and identical-body 200 preserve fetch date and content version. Raw bytes, URL/UTC date/hash, active metadata and immutable .objects history are private and resumable across interruptions.",
+    "Local flat frontmatter/Markdown preamble or JSONL manifest metadata, exact UTF-8 decoded character spans, Decimal source timing only, nullable unknown company/video/times, source-backed speaker override evidence.",
+    "Canonical URL/video/hash identity components plus persisted aliases; duplicate groups cannot inflate Talk count. Uncertain identity/source/revision blocks, contradictory metadata/video identity fails, including cross-run bridges.",
+    "Deterministic Talk/Segment IDs and version hashes; exact unchanged reruns write no rows. Changed source/fetch evidence creates immutable same-ID versions; fetched Talk paths reference verified immutable raw objects.",
+    "Declared input/cache roots, per-entry symlink rejection, repository/skill cache exclusion, input/output collision rejection, SQLite auxiliary-path checks; database and private artifacts restricted to owner access.",
+    "Atomic Store stage receipts retain config/input hashes/outcome/output_refs; JSON receipts also contain counts and per-input diagnostics. FAIL/BLOCKED exit nonzero and commit no partial entity output. PASS lists every written Talk/Segment row.",
+    "SPEC, ARCHITECTURE and REQUIREMENTS replace active local-only acquisition restrictions with C03 fetch/cache behavior and retain A2 no-redistribution/short quotes, C12 launch terms, and excluded hosted YouTube scraper/general channels.",
+    "24 synthetic recorded Markdown transcripts plus two synthetic recorded HTTP fixture files cover the requested behavior; existing network-blocking pytest fixture remains enabled."
+  ],
+  "verification_environment": {
+    "python": "3.12.3",
+    "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache",
+    "UV_OFFLINE": "1",
+    "network": "No live site or model; recorded synthetic transports only. Existing conftest blocks socket connections."
+  },
+  "checks": [
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run python --version",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "Python 3.12.3\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware --help",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "                                                                                \n Usage: skillware [OPTIONS] COMMAND [ARGS]...                                   \n                                                                                \n Build evidence-backed Agent Skills from conference transcripts.                \n                                                                                \n╭─ Options ────────────────────────────────────────────────────────────────────╮\n│ --help        <bool>  Show this message and exit.                            │\n╰──────────────────────────────────────────────────────────────────────────────╯\n╭─ Commands ───────────────────────────────────────────────────────────────────╮\n│ ingest      Fetch AI Engineer Markdown or parse declared local transcripts.  │\n│ extract     Propose atomic claims and repository mentions.                   │\n│ cluster     Assess scoped agreement and opposition across talks.             │\n│ synthesize  Draft skills from reviewed evidence.                             │\n│ validate    Validate the complete candidate skill pack.                      │\n│ eval        Evaluate against reviewed labels and criteria.                   │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --help",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "                                                                                \n Usage: skillware ingest [OPTIONS] COMMAND [ARGS]...                            \n                                                                                \n Fetch AI Engineer Markdown or parse declared local transcripts.                \n                                                                                \n╭─ Options ────────────────────────────────────────────────────────────────────╮\n│ --cache           <path>  Cached or local Markdown directory.                │\n│ --db              <path>  Private SQLite output path.                        │\n│ --manifest        <path>  Local JSONL source metadata.                       │\n│ --root            <path>  Input root; defaults to --cache.                   │\n│ --help            <bool>  Show this message and exit.                        │\n╰──────────────────────────────────────────────────────────────────────────────╯\n╭─ Commands ───────────────────────────────────────────────────────────────────╮\n│ fetch  Retrieve AI Engineer Markdown with robots, pacing, and conditional    │\n│        caching.                                                              │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch --help",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "                                                                                \n Usage: skillware ingest fetch [OPTIONS]                                        \n                                                                                \n Retrieve AI Engineer Markdown with robots, pacing, and conditional caching.    \n                                                                                \n╭─ Options ────────────────────────────────────────────────────────────────────╮\n│ --out         <path>       Private cache directory outside repositories.     │\n│ --root        <path>       Cache root; defaults to --out.                    │\n│ --url         <list[str]>  AI Engineer Markdown/index URL; repeatable;       │\n│                            default discovery.                                │\n│ --help        <bool>       Show this message and exit.                       │\n╰──────────────────────────────────────────────────────────────────────────────╯\n\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest",
+      "expected": 2,
+      "exit_code": 2,
+      "stdout_stderr": "{\"config_version\": \"c03-ingest-v1\", \"counts\": {}, \"errors\": [\"ingest requires --cache and --db\"], \"input_hashes\": {}, \"outcome\": \"BLOCKED\", \"output_refs\": [], \"receipt_path\": null, \"stage\": \"ingest\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch",
+      "expected": 2,
+      "exit_code": 2,
+      "stdout_stderr": "{\"config_version\": \"c03-ingest-v1\", \"counts\": {}, \"errors\": [\"ingest fetch requires --out\"], \"input_hashes\": {}, \"outcome\": \"BLOCKED\", \"output_refs\": [], \"receipt_path\": null, \"stage\": \"ingest\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache tests/fixtures/transcripts --db /tmp/skillware-c03-cli.NOPeYy/claims.sqlite3",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "{\"counts\": {\"blocked\": 0, \"duplicates\": 0, \"failed\": 0, \"inputs\": 24, \"segments\": 48, \"talks\": 24, \"unchanged\": 0}, \"errors\": [], \"outcome\": \"PASS\", \"receipt_path\": \"/tmp/skillware-c03-cli.NOPeYy/claims.sqlite3.ingest.json\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache tests/fixtures/transcripts --db /tmp/skillware-c03-cli.NOPeYy/claims.sqlite3",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "{\"counts\": {\"blocked\": 0, \"duplicates\": 0, \"failed\": 0, \"inputs\": 24, \"segments\": 0, \"talks\": 0, \"unchanged\": 24}, \"errors\": [], \"outcome\": \"PASS\", \"receipt_path\": \"/tmp/skillware-c03-cli.NOPeYy/claims.sqlite3.ingest.json\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest --cache /tmp/skillware-c03-cli.NOPeYy/missing --db /tmp/skillware-c03-cli.NOPeYy/blocked.sqlite3",
+      "expected": 2,
+      "exit_code": 2,
+      "stdout_stderr": "{\"counts\": {\"blocked\": 1, \"duplicates\": 0, \"failed\": 0, \"inputs\": 0, \"segments\": 0, \"talks\": 0, \"unchanged\": 0}, \"errors\": [\"BLOCKED: missing input: [Errno 2] No such file or directory: '/tmp/skillware-c03-cli.NOPeYy/missing'\"], \"outcome\": \"BLOCKED\", \"receipt_path\": \"/tmp/skillware-c03-cli.NOPeYy/blocked.sqlite3.ingest.json\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch --out /tmp/skillware-c03-cli.NOPeYy/outside --root /tmp/skillware-c03-cli.NOPeYy/declared",
+      "expected": 2,
+      "exit_code": 2,
+      "stdout_stderr": "{\"config_version\": \"c03-fetch-v1\", \"counts\": {}, \"errors\": [\"path is outside declared root: /tmp/skillware-c03-cli.NOPeYy/outside\"], \"input_hashes\": {}, \"outcome\": \"BLOCKED\", \"output_refs\": [], \"receipt_path\": null, \"stage\": \"ingest.fetch\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 uv run skillware ingest fetch",
+      "expected": 2,
+      "exit_code": 2,
+      "stdout_stderr": "{\"config_version\": \"c03-fetch-v1\", \"counts\": {}, \"errors\": [\"ingest fetch requires --out\"], \"input_hashes\": {}, \"outcome\": \"BLOCKED\", \"output_refs\": [], \"receipt_path\": null, \"stage\": \"ingest.fetch\"}\n",
+      "status": "PASS"
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 bash -c 'uv sync && uv run pytest -q'",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "Resolved 19 packages in 0.84ms\nChecked 18 packages in 0.35ms\n........................................................................ [ 28%]\n........................................................................ [ 57%]\n........................................................................ [ 85%]\n....................................                                     [100%]\n252 passed in 3.04s\n",
+      "status": "PASS",
+      "test_counts": {
+        "passed": 252,
+        "failed": 0,
+        "skipped": 0,
+        "errors": 0
+      }
+    },
+    {
+      "command": "UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1 bash -c 'uv run ruff check . && uv run ruff format --check .'",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "All checks passed!\n55 files already formatted\n",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --check",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": "",
+      "status": "PASS"
+    },
+    {
+      "command": "git diff --stat",
+      "expected": 0,
+      "exit_code": 0,
+      "stdout_stderr": " docs/ARCHITECTURE.md             | 121 +++++++++++++++++++++++----------\n docs/REQUIREMENTS.md             |  62 ++++++++++-------\n docs/SPEC.md                     | 141 ++++++++++++++++++++++++++++++---------\n schemas/Talk.json                |  49 ++++++++++++++\n src/skillware/cli.py             | 122 +++++++++++++++++++++++++++++++--\n src/skillware/ingest/__init__.py |   2 +-\n src/skillware/schema.py          |  27 ++++++++\n tests/test_cli.py                |  35 +++++++++-\n 8 files changed, 461 insertions(+), 98 deletions(-)\n",
+      "status": "PASS"
+    },
+    {
+      "command": "python3.12 - <<'PY'\nimport hashlib\nimport json\nimport shlex\nimport subprocess\nfrom pathlib import Path\n\ndef run(args):\n    result = subprocess.run(args, capture_output=True, text=True)\n    return {'command': shlex.join(args), 'exit_code': result.returncode, 'stdout_stderr': result.stdout + result.stderr}\n\nbase = '89375493eb8de2d446288b413652881c5c04b5bb'\nbranch = run(['git', 'branch', '--show-current'])\nhead = run(['git', 'rev-parse', 'HEAD'])\nassert branch['stdout_stderr'].strip() == 'aw/c03-ingest'\nassert head['stdout_stderr'].strip() == base\ntracked = run(['git', 'diff', '--name-only'])\nuntracked = run(['git', 'ls-files', '--others', '--exclude-standard'])\nchanged = sorted(set(tracked['stdout_stderr'].splitlines() + untracked['stdout_stderr'].splitlines()))\nallowed_docs = {'docs/SPEC.md', 'docs/ARCHITECTURE.md', 'docs/REQUIREMENTS.md'}\nassert all(p in allowed_docs or p == 'schemas/Talk.json' or p.startswith(('src/skillware/', 'tests/')) for p in changed), changed\nartifacts = []\nfor name in changed:\n    path = Path(name)\n    assert not path.is_symlink()\n    raw = path.read_bytes()\n    artifacts.append({'path': name, 'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)})\nchecks = []\nfor name in untracked['stdout_stderr'].splitlines():\n    check = run(['git', 'diff', '--no-index', '--check', '--', '/dev/null', name])\n    check['status'] = 'PASS' if check['exit_code'] in (0, 1) and not check['stdout_stderr'] else 'FAIL'\n    checks.append(check)\n    assert check['status'] == 'PASS', check\n    stat = run(['git', 'diff', '--no-index', '--stat', '--', '/dev/null', name])\n    assert stat['exit_code'] in (0, 1), stat\n    checks.append(stat)\nfixtures = sorted(Path('tests/fixtures/transcripts').glob('*.md'))\nassert len(fixtures) >= 20\nassert all('Synthetic transcript' in path.read_text() for path in fixtures)\nhttp = sorted(Path('tests/fixtures/http').glob('*.json'))\nfor path in http:\n    json.loads(path.read_text())\npattern = 'No network source acquisition|no network ingestion|MVP ingest reads local Markdown|it does not download videos, transcripts'\nconflicts = run(['rg', '-n', pattern, *sorted(allowed_docs)])\nassert conflicts['exit_code'] == 1 and not conflicts['stdout_stderr'], conflicts\npayload = {'branch': branch, 'head': head, 'tracked_inventory': tracked, 'untracked_inventory': untracked, 'changed_files': changed, 'artifact_hashes': artifacts, 'untracked_checks': checks, 'untracked_exit_note': 'git diff --no-index exit 1 means differing/new file; whitespace PASS requires zero diagnostics.', 'fixture_counts': {'transcript_files': len(fixtures), 'http_files': len(http)}, 'leftover_conflict_scan': conflicts, 'protected_paths': 'Changed-path allowlist excludes LICENSE, workflows, credentials, local agent/private data, gold/rubrics/thresholds/baselines; no protected changes.'}\nPath('/tmp/skillware-c03-audit.json').write_text(json.dumps(payload, indent=2) + '\\n')\nprint(json.dumps({'files': len(changed), 'untracked_files': len(untracked['stdout_stderr'].splitlines()), 'untracked_whitespace': 'PASS', 'transcript_fixtures': len(fixtures), 'http_fixture_files': len(http), 'protected_paths': 'PASS', 'leftover_acquisition_conflicts': 0}))\nPY",
+      "exit_code": 0,
+      "stdout_stderr": "{\"files\": 43, \"untracked_files\": 35, \"untracked_whitespace\": \"PASS\", \"transcript_fixtures\": 24, \"http_fixture_files\": 2, \"protected_paths\": \"PASS\", \"leftover_acquisition_conflicts\": 0}\n",
+      "status": "PASS"
+    }
+  ],
+  "counts": {
+    "pytest_passed": 252,
+    "pytest_failed": 0,
+    "pytest_skipped": 0,
+    "pytest_errors": 0,
+    "ruff_files_formatted": 55,
+    "recorded_transcript_files": 24,
+    "recorded_http_files": 2
+  },
+  "cli_outcomes": {
+    "first_ingest": {
+      "talks": 24,
+      "segments": 48,
+      "outcome": "PASS",
+      "exit_code": 0
+    },
+    "unchanged_rerun": {
+      "talks": 0,
+      "segments": 0,
+      "unchanged": 24,
+      "outcome": "PASS",
+      "exit_code": 0
+    },
+    "missing_inputs": {
+      "outcome": "BLOCKED",
+      "exit_code": 2
+    },
+    "contradictory_attribution": {
+      "evidence": "tests/test_ingest_e2e.py (part of 252-pass suite)",
+      "outcome": "FAIL",
+      "exit_code": 1
+    }
+  },
+  "audit": {
+    "branch": {
+      "command": "git branch --show-current",
+      "exit_code": 0,
+      "stdout_stderr": "aw/c03-ingest\n"
+    },
+    "head": {
+      "command": "git rev-parse HEAD",
+      "exit_code": 0,
+      "stdout_stderr": "89375493eb8de2d446288b413652881c5c04b5bb\n"
+    },
+    "tracked_inventory": {
+      "command": "git diff --name-only",
+      "exit_code": 0,
+      "stdout_stderr": "docs/ARCHITECTURE.md\ndocs/REQUIREMENTS.md\ndocs/SPEC.md\nschemas/Talk.json\nsrc/skillware/cli.py\nsrc/skillware/ingest/__init__.py\nsrc/skillware/schema.py\ntests/test_cli.py\n"
+    },
+    "untracked_inventory": {
+      "command": "git ls-files --others --exclude-standard",
+      "exit_code": 0,
+      "stdout_stderr": "src/skillware/ingest/fetch.py\nsrc/skillware/ingest/parser.py\nsrc/skillware/ingest/paths.py\nsrc/skillware/ingest/pipeline.py\ntests/fixtures/http/robots_rules.json\ntests/fixtures/http/transcripts.json\ntests/fixtures/transcripts/talk-01.md\ntests/fixtures/transcripts/talk-02.md\ntests/fixtures/transcripts/talk-03.md\ntests/fixtures/transcripts/talk-04.md\ntests/fixtures/transcripts/talk-05.md\ntests/fixtures/transcripts/talk-06.md\ntests/fixtures/transcripts/talk-07.md\ntests/fixtures/transcripts/talk-08.md\ntests/fixtures/transcripts/talk-09.md\ntests/fixtures/transcripts/talk-10.md\ntests/fixtures/transcripts/talk-11.md\ntests/fixtures/transcripts/talk-12.md\ntests/fixtures/transcripts/talk-13.md\ntests/fixtures/transcripts/talk-14.md\ntests/fixtures/transcripts/talk-15.md\ntests/fixtures/transcripts/talk-16.md\ntests/fixtures/transcripts/talk-17.md\ntests/fixtures/transcripts/talk-18.md\ntests/fixtures/transcripts/talk-19.md\ntests/fixtures/transcripts/talk-20.md\ntests/fixtures/transcripts/talk-21.md\ntests/fixtures/transcripts/talk-22.md\ntests/fixtures/transcripts/talk-23.md\ntests/fixtures/transcripts/talk-24.md\ntests/test_fetch.py\ntests/test_fetch_provenance.py\ntests/test_ingest.py\ntests/test_ingest_e2e.py\ntests/test_ingest_paths.py\n"
+    },
+    "changed_files": [
+      "docs/ARCHITECTURE.md",
+      "docs/REQUIREMENTS.md",
+      "docs/SPEC.md",
+      "schemas/Talk.json",
+      "src/skillware/cli.py",
+      "src/skillware/ingest/__init__.py",
+      "src/skillware/ingest/fetch.py",
+      "src/skillware/ingest/parser.py",
+      "src/skillware/ingest/paths.py",
+      "src/skillware/ingest/pipeline.py",
+      "src/skillware/schema.py",
+      "tests/fixtures/http/robots_rules.json",
+      "tests/fixtures/http/transcripts.json",
+      "tests/fixtures/transcripts/talk-01.md",
+      "tests/fixtures/transcripts/talk-02.md",
+      "tests/fixtures/transcripts/talk-03.md",
+      "tests/fixtures/transcripts/talk-04.md",
+      "tests/fixtures/transcripts/talk-05.md",
+      "tests/fixtures/transcripts/talk-06.md",
+      "tests/fixtures/transcripts/talk-07.md",
+      "tests/fixtures/transcripts/talk-08.md",
+      "tests/fixtures/transcripts/talk-09.md",
+      "tests/fixtures/transcripts/talk-10.md",
+      "tests/fixtures/transcripts/talk-11.md",
+      "tests/fixtures/transcripts/talk-12.md",
+      "tests/fixtures/transcripts/talk-13.md",
+      "tests/fixtures/transcripts/talk-14.md",
+      "tests/fixtures/transcripts/talk-15.md",
+      "tests/fixtures/transcripts/talk-16.md",
+      "tests/fixtures/transcripts/talk-17.md",
+      "tests/fixtures/transcripts/talk-18.md",
+      "tests/fixtures/transcripts/talk-19.md",
+      "tests/fixtures/transcripts/talk-20.md",
+      "tests/fixtures/transcripts/talk-21.md",
+      "tests/fixtures/transcripts/talk-22.md",
+      "tests/fixtures/transcripts/talk-23.md",
+      "tests/fixtures/transcripts/talk-24.md",
+      "tests/test_cli.py",
+      "tests/test_fetch.py",
+      "tests/test_fetch_provenance.py",
+      "tests/test_ingest.py",
+      "tests/test_ingest_e2e.py",
+      "tests/test_ingest_paths.py"
+    ],
+    "artifact_hashes": [
+      {
+        "path": "docs/ARCHITECTURE.md",
+        "sha256": "96a542940b4bd5d485d1436a996502f34971677ab7b8b03958749cda7add576c",
+        "bytes": 25412
+      },
+      {
+        "path": "docs/REQUIREMENTS.md",
+        "sha256": "c38f50335cbbed2e9e0c6194cb1ed01f597d1860de8ada41425de1b691b8ed09",
+        "bytes": 11717
+      },
+      {
+        "path": "docs/SPEC.md",
+        "sha256": "03ebc876b292448a0a7cdba7c89a4ebb29114fe490c237a94ee6c7fe378893dc",
+        "bytes": 22832
+      },
+      {
+        "path": "schemas/Talk.json",
+        "sha256": "80cfe9c50fe32e2b4f7c940ceef202d44f5ec05d642f96dff176599b169bc98e",
+        "bytes": 3203
+      },
+      {
+        "path": "src/skillware/cli.py",
+        "sha256": "98dbbd20fae454af3db37fb6254625aca20ab2ffd7cad76ab86e1a7461ed789b",
+        "bytes": 4924
+      },
+      {
+        "path": "src/skillware/ingest/__init__.py",
+        "sha256": "7379ade570089ec5908555fe1132f712c949d6a3f4292fbb4e0077626f6843e1",
+        "bytes": 82
+      },
+      {
+        "path": "src/skillware/ingest/fetch.py",
+        "sha256": "679c876c449deb4157b16d3198991008d3106571ad834525d0bdd431fc9b69cd",
+        "bytes": 27444
+      },
+      {
+        "path": "src/skillware/ingest/parser.py",
+        "sha256": "e5ad6aeadf19f94bed0519793aebde122f44e04f535258652f56e4c730cce873",
+        "bytes": 10738
+      },
+      {
+        "path": "src/skillware/ingest/paths.py",
+        "sha256": "b9ccbe282dab1ae5f08d79b32f76ca62c1d46ba92e511f75d9135eecb78b535d",
+        "bytes": 2463
+      },
+      {
+        "path": "src/skillware/ingest/pipeline.py",
+        "sha256": "7975d52e79b5736ef6f54498535d4d287b84668d02ae064db7aa99aa084f82c2",
+        "bytes": 19090
+      },
+      {
+        "path": "src/skillware/schema.py",
+        "sha256": "432480e94fdc59b1bea6134a69d95ad55c478aa1c44aed21c2cc321745027db8",
+        "bytes": 13840
+      },
+      {
+        "path": "tests/fixtures/http/robots_rules.json",
+        "sha256": "26fc84215d7d3e653ee0fb06e692fb3bdb77e2fc420fbae19689b91ebc5ea233",
+        "bytes": 2335
+      },
+      {
+        "path": "tests/fixtures/http/transcripts.json",
+        "sha256": "f615f5700b5586044ec5203ed942d4176356e73f6e72136cee0ff33f86901e0d",
+        "bytes": 2452
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-01.md",
+        "sha256": "5cfe4e6327676b7430ee80d4b77d95b3458b712a2f779543f518c376f078815e",
+        "bytes": 262
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-02.md",
+        "sha256": "17b20b218260bb6e7825c5c4bfd8f8aa85b37e8ec90097c6e422f84feb12fb20",
+        "bytes": 271
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-03.md",
+        "sha256": "7fa8d81a2dca763d9f7015dd30af56f82690631ace8deb8c9c00fc4635e8b8c8",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-04.md",
+        "sha256": "e3989c822842720355e9516e20688dba72f201922f773a249d45ee1ecf3e6f61",
+        "bytes": 235
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-05.md",
+        "sha256": "4897b43029e384c71096a91606a3535e6c914019d10053e0e9690258a49c45be",
+        "bytes": 262
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-06.md",
+        "sha256": "5911c64588671564ea774d85c9e87276f72376c10703a4aa6c6adb8b49c3c529",
+        "bytes": 271
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-07.md",
+        "sha256": "2177ff6e9f6fa1df99dcf074bb3716e0753b50ccd5b208b82ade3ce5256e238f",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-08.md",
+        "sha256": "9b5653b65059e399b9a0747caa0f41f64e4593571d50103d34566b6ab2f88efc",
+        "bytes": 235
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-09.md",
+        "sha256": "1443e3fdc63db9cc579bfb0094fbfe9d5a07f6041b8845f98c4cc01c31e72a2d",
+        "bytes": 262
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-10.md",
+        "sha256": "93867d01aa948caf5235557d6803d776577617d8d44cc6e6cf7859c199eb6bb9",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-11.md",
+        "sha256": "8d222f019456e8f5e0d658d59c416426ea413f227bec1cd77459bae77354a4a8",
+        "bytes": 273
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-12.md",
+        "sha256": "f849824b49d5ae854396325da1a75419c7044302611ae84a7795712b2c5bef99",
+        "bytes": 236
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-13.md",
+        "sha256": "dd44253762e75f8c6b0abff2018b876cc732f3f6b1191411841140af3a0b7b5e",
+        "bytes": 263
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-14.md",
+        "sha256": "3471b822b45a8b7390f5005f7c56c24f6d1fe0f40fcad63190278f681586a992",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-15.md",
+        "sha256": "de7bfb532da9a0ce4b659827489151162e1706eeae8ff2a2bd70e8de3ca3a854",
+        "bytes": 273
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-16.md",
+        "sha256": "12625e532eefd2f80a9a6cf00f62dfbd81bb7cd45ec81b1aae4b14aec4e78350",
+        "bytes": 236
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-17.md",
+        "sha256": "5bfb095bfe4a4c06f04d24045ef6ce793881d1c5214d43d5574d85d13b003460",
+        "bytes": 263
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-18.md",
+        "sha256": "4018754a95c0a516adecbb8258c1d74d19eea76d42e751505081d3c879bc04d2",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-19.md",
+        "sha256": "2064417766e1e72e427a3387333dd66fad12def57debe3d8a2e54d88dfb90cba",
+        "bytes": 273
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-20.md",
+        "sha256": "1721eaa7031532f65d0bad43811c665922d018248d611ef1ad65760a009b7b9c",
+        "bytes": 236
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-21.md",
+        "sha256": "10f6542bc5e9ef1d832989060588b215fbf16b11a9a9cabc4e953cf764203865",
+        "bytes": 263
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-22.md",
+        "sha256": "5a70b00a6a9313230ef6dc19118c791f65dc71631b5735543f7deecce4421ae1",
+        "bytes": 272
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-23.md",
+        "sha256": "8c51db861629e8f433267b9b4a11a5bf637828ef69ebff2001e51496dfb879f7",
+        "bytes": 273
+      },
+      {
+        "path": "tests/fixtures/transcripts/talk-24.md",
+        "sha256": "e61fcd260a599b5f5fbcc9659903568a3e2cf9acb2a18d6958bb721f89265da9",
+        "bytes": 236
+      },
+      {
+        "path": "tests/test_cli.py",
+        "sha256": "3b4b63e947d2c006fa48d00cba0a63c7a48a93b6e54af132bc11fde8893c4128",
+        "bytes": 2347
+      },
+      {
+        "path": "tests/test_fetch.py",
+        "sha256": "b02dca20f728873d8963fcbde37f76cd6645bc54066fb5eb802a4eb08f6fe8c2",
+        "bytes": 18716
+      },
+      {
+        "path": "tests/test_fetch_provenance.py",
+        "sha256": "a5418f5e2d72aaa54a60f0490dd22b4ab17c312fb3bae88b164e402cb1786aa6",
+        "bytes": 1423
+      },
+      {
+        "path": "tests/test_ingest.py",
+        "sha256": "eeea3233a6f4bd4b5d41f29e84b3836f8917578b9556d38baca8fe092e6e3e58",
+        "bytes": 22844
+      },
+      {
+        "path": "tests/test_ingest_e2e.py",
+        "sha256": "a5ddae2363c2df81c3f0a662fdd62d79bf4044f33a65d2f1c768923d4b7f40f3",
+        "bytes": 4362
+      },
+      {
+        "path": "tests/test_ingest_paths.py",
+        "sha256": "56cc4e79a5b4d953eecbcd6c77b50a127b157181e57576d5c41fbb74b05ed91a",
+        "bytes": 1765
+      }
+    ],
+    "untracked_checks": [
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/fetch.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/fetch.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => src/skillware/ingest/fetch.py | 662 +++++++++++++++++++++++++++++\n 1 file changed, 662 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/parser.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/parser.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => src/skillware/ingest/parser.py | 284 ++++++++++++++++++++++++++++\n 1 file changed, 284 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/paths.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/paths.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => src/skillware/ingest/paths.py | 59 ++++++++++++++++++++++++++++++\n 1 file changed, 59 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null src/skillware/ingest/pipeline.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null src/skillware/ingest/pipeline.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => src/skillware/ingest/pipeline.py | 485 ++++++++++++++++++++++++++\n 1 file changed, 485 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/http/robots_rules.json",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/http/robots_rules.json",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/http/robots_rules.json | 17 +++++++++++++++++\n 1 file changed, 17 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/http/transcripts.json",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/http/transcripts.json",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/http/transcripts.json | 84 +++++++++++++++++++++++\n 1 file changed, 84 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-01.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-01.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-01.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-02.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-02.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-02.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-03.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-03.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-03.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-04.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-04.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-04.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-05.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-05.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-05.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-06.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-06.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-06.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-07.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-07.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-07.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-08.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-08.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-08.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-09.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-09.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-09.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-10.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-10.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-10.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-11.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-11.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-11.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-12.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-12.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-12.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-13.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-13.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-13.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-14.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-14.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-14.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-15.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-15.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-15.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-16.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-16.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-16.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-17.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-17.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-17.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-18.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-18.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-18.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-19.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-19.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-19.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-20.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-20.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-20.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-21.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-21.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-21.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-22.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-22.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-22.md | 11 +++++++++++\n 1 file changed, 11 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-23.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-23.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-23.md | 9 +++++++++\n 1 file changed, 9 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/fixtures/transcripts/talk-24.md",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/fixtures/transcripts/talk-24.md",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/fixtures/transcripts/talk-24.md | 10 ++++++++++\n 1 file changed, 10 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_fetch.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_fetch.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/test_fetch.py | 522 +++++++++++++++++++++++++++++++++++++++\n 1 file changed, 522 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_fetch_provenance.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_fetch_provenance.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/test_fetch_provenance.py | 41 +++++++++++++++++++++++++++++\n 1 file changed, 41 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_ingest.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_ingest.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/test_ingest.py | 565 ++++++++++++++++++++++++++++++++++++++\n 1 file changed, 565 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_ingest_e2e.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_ingest_e2e.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/test_ingest_e2e.py | 108 ++++++++++++++++++++++++++++++++++\n 1 file changed, 108 insertions(+)\n"
+      },
+      {
+        "command": "git diff --no-index --check -- /dev/null tests/test_ingest_paths.py",
+        "exit_code": 1,
+        "stdout_stderr": "",
+        "status": "PASS"
+      },
+      {
+        "command": "git diff --no-index --stat -- /dev/null tests/test_ingest_paths.py",
+        "exit_code": 1,
+        "stdout_stderr": " /dev/null => tests/test_ingest_paths.py | 45 +++++++++++++++++++++++++++++++++\n 1 file changed, 45 insertions(+)\n"
+      }
+    ],
+    "untracked_exit_note": "git diff --no-index exit 1 means differing/new file; whitespace PASS requires zero diagnostics.",
+    "fixture_counts": {
+      "transcript_files": 24,
+      "http_files": 2
+    },
+    "leftover_conflict_scan": {
+      "command": "rg -n 'No network source acquisition|no network ingestion|MVP ingest reads local Markdown|it does not download videos, transcripts' docs/ARCHITECTURE.md docs/REQUIREMENTS.md docs/SPEC.md",
+      "exit_code": 1,
+      "stdout_stderr": ""
+    },
+    "protected_paths": "Changed-path allowlist excludes LICENSE, workflows, credentials, local agent/private data, gold/rubrics/thresholds/baselines; no protected changes."
+  },
+  "assumptions": [
+    "--cache and --out declare directory roots unless --root explicitly supplies an enclosing root; each nested input, manifest and cache artifact is validated. The explicit --db path declares its separate output target.",
+    "All supplied symlinks, including symlink ancestors, are rejected rather than followed. Operators must use a real non-symlink root spelling.",
+    "Index discovery follows advertised same-site .md links; current live AI Engineer route/layout is not asserted. Explicit --url can provide a known Markdown endpoint.",
+    "304/identical-body 200 validator updates and last_checked_at are revalidation, not new source evidence. Source URL, content hash, or fetch-date changes are version-worthy.",
+    "Metadata supports flat scalar frontmatter, conventional Markdown headings/preamble, and per-path JSONL manifests. Unsupported or ambiguous metadata blocks rather than guessing.",
+    "Dedup is intentionally conservative: possibly-same sources block the stage; no attempt to invent a source attribution or automatic identity merge across existing independent Talks.",
+    "SQLite remains schema version 2 without migration changes; new Talk fields are optional/backward-compatible and its checked-in JSON schema was regenerated.",
+    "New fixtures are implementation tests, not protected reviewed eval gold/rubric/baseline changes."
+  ],
+  "deviations": [
+    "The C03 objective explicitly authorizes the three named docs despite historical protected/C01-only wording; active conflicting acquisition wording was removed. No leftover acquisition conflict found by targeted scan.",
+    "Updated only the ingest case of the old all-stages-stub test because ingest is implemented; all five unimplemented-stage checks remain, and new ingest CLI PASS/FAIL/BLOCKED tests strengthen coverage.",
+    "When CLI declarations provide no safe output destination (missing --db/--out, unsafe path, or output collision), a structured BLOCKED JSON receipt is emitted to stdout; the tool does not write an artifact to an undeclared/unsafe path.",
+    "Fixtures and implementation remain uncommitted in this worktree for broker capture and independent validation, honoring the explicit no-commit/no-push/no-PR/no-merge rule.",
+    "Source acquisition is implemented but no live acquisition was performed, as required by this run's no-network policy."
+  ],
+  "development_findings_resolved": [
+    "Initial containment test exposed an empty /tmp/.git sandbox marker; repository detection now checks a Git file or .git/HEAD, while always excluding this source repository. Targeted rerun 103 passed.",
+    "Initial CLI stage-order help test found the word ingest repeated in help prose; corrected wording rather than weakening the assertion. Focused rerun 11 passed/1 deselected.",
+    "An intermediate full test run during a concurrent discovery edit saw 200 passed/1 transient TypeError; files were frozen before final gates. The final full run has 252 passed, zero failures/skips.",
+    "Review found source alias bridges, cross-run contradictory video identity, input/receipt collisions, and standard robotparser precedence/wildcard deficiencies. Added regression tests and fixed these before submission."
+  ],
+  "blocked_or_unrun": [
+    {
+      "check": "Live AI Engineer requests/layout verification",
+      "status": "BLOCKED",
+      "reason": "Intentionally unrun: network forbidden; fixture coverage is the C03 verification contract."
+    },
+    {
+      "check": "Live model/production CLI subscription calls",
+      "status": "BLOCKED",
+      "reason": "Intentionally unrun and outside C03; no API keys/paid APIs/fallback."
+    },
+    {
+      "check": "Independent tester/reviewer verdict",
+      "status": "BLOCKED",
+      "reason": "Pending orchestrator dispatch after this developer claim; no developer world_review."
+    },
+    {
+      "check": "Downstream quality evaluation/gold labels",
+      "status": "BLOCKED",
+      "reason": "Outside this ingest slice; no evaluation changes."
+    }
+  ],
+  "human_gates": {
+    "AI_Engineer_terms": "C12 launch gate; preserved, not a C03 success criterion",
+    "Arpan_PR_approval": "Post-run merge gate, not a C03 success criterion",
+    "actions": "No commit, push, PR, merge, publication, settings change, secrets access, or permission widening performed."
+  },
+  "artifact_hash_note": "Audit hashes every implementation/docs/test artifact. This evidence file is separately broker-hashed by world_submit; final file whitespace is checked after serialization to avoid a self-hash cycle."
+}

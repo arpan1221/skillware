@@ -1,0 +1,150 @@
+{
+  "files": [
+    {
+      "bytes": 262,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 01\"\nspeaker: \"Fixture Speaker 01\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-01\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 1 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-01.md",
+      "sha256": "5cfe4e6327676b7430ee80d4b77d95b3458b712a2f779543f518c376f078815e"
+    },
+    {
+      "bytes": 271,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 02\"\nspeaker: \"Fixture Speaker 02\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-02\"\n---\n\n00:10 Synthetic fixture 2 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-02.md",
+      "sha256": "17b20b218260bb6e7825c5c4bfd8f8aa85b37e8ec90097c6e422f84feb12fb20"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 03\"\nspeaker: \"Fixture Speaker 03\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-03\"\n---\n\n[01:02:03.125] Synthetic fixture 3 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-03.md",
+      "sha256": "7fa8d81a2dca763d9f7015dd30af56f82690631ace8deb8c9c00fc4635e8b8c8"
+    },
+    {
+      "bytes": 235,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 04\"\nspeaker: \"Fixture Speaker 04\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-04\"\n---\n\nThis is synthetic untimed fixture 4. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-04.md",
+      "sha256": "e3989c822842720355e9516e20688dba72f201922f773a249d45ee1ecf3e6f61"
+    },
+    {
+      "bytes": 262,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 05\"\nspeaker: \"Fixture Speaker 05\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-05\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 5 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-05.md",
+      "sha256": "4897b43029e384c71096a91606a3535e6c914019d10053e0e9690258a49c45be"
+    },
+    {
+      "bytes": 271,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 06\"\nspeaker: \"Fixture Speaker 06\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-06\"\n---\n\n00:10 Synthetic fixture 6 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-06.md",
+      "sha256": "5911c64588671564ea774d85c9e87276f72376c10703a4aa6c6adb8b49c3c529"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 07\"\nspeaker: \"Fixture Speaker 07\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-07\"\n---\n\n[01:02:03.125] Synthetic fixture 7 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-07.md",
+      "sha256": "2177ff6e9f6fa1df99dcf074bb3716e0753b50ccd5b208b82ade3ce5256e238f"
+    },
+    {
+      "bytes": 235,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 08\"\nspeaker: \"Fixture Speaker 08\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-08\"\n---\n\nThis is synthetic untimed fixture 8. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-08.md",
+      "sha256": "9b5653b65059e399b9a0747caa0f41f64e4593571d50103d34566b6ab2f88efc"
+    },
+    {
+      "bytes": 262,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 09\"\nspeaker: \"Fixture Speaker 09\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-09\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 9 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-09.md",
+      "sha256": "1443e3fdc63db9cc579bfb0094fbfe9d5a07f6041b8845f98c4cc01c31e72a2d"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 10\"\nspeaker: \"Fixture Speaker 10\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-10\"\n---\n\n00:10 Synthetic fixture 10 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-10.md",
+      "sha256": "93867d01aa948caf5235557d6803d776577617d8d44cc6e6cf7859c199eb6bb9"
+    },
+    {
+      "bytes": 273,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 11\"\nspeaker: \"Fixture Speaker 11\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-11\"\n---\n\n[01:02:03.125] Synthetic fixture 11 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-11.md",
+      "sha256": "8d222f019456e8f5e0d658d59c416426ea413f227bec1cd77459bae77354a4a8"
+    },
+    {
+      "bytes": 236,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 12\"\nspeaker: \"Fixture Speaker 12\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-12\"\n---\n\nThis is synthetic untimed fixture 12. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-12.md",
+      "sha256": "f849824b49d5ae854396325da1a75419c7044302611ae84a7795712b2c5bef99"
+    },
+    {
+      "bytes": 263,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 13\"\nspeaker: \"Fixture Speaker 13\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-13\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 13 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-13.md",
+      "sha256": "dd44253762e75f8c6b0abff2018b876cc732f3f6b1191411841140af3a0b7b5e"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 14\"\nspeaker: \"Fixture Speaker 14\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-14\"\n---\n\n00:10 Synthetic fixture 14 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-14.md",
+      "sha256": "3471b822b45a8b7390f5005f7c56c24f6d1fe0f40fcad63190278f681586a992"
+    },
+    {
+      "bytes": 273,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 15\"\nspeaker: \"Fixture Speaker 15\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-15\"\n---\n\n[01:02:03.125] Synthetic fixture 15 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-15.md",
+      "sha256": "de7bfb532da9a0ce4b659827489151162e1706eeae8ff2a2bd70e8de3ca3a854"
+    },
+    {
+      "bytes": 236,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 16\"\nspeaker: \"Fixture Speaker 16\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-16\"\n---\n\nThis is synthetic untimed fixture 16. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-16.md",
+      "sha256": "12625e532eefd2f80a9a6cf00f62dfbd81bb7cd45ec81b1aae4b14aec4e78350"
+    },
+    {
+      "bytes": 263,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 17\"\nspeaker: \"Fixture Speaker 17\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-17\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 17 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-17.md",
+      "sha256": "5bfb095bfe4a4c06f04d24045ef6ce793881d1c5214d43d5574d85d13b003460"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 18\"\nspeaker: \"Fixture Speaker 18\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-18\"\n---\n\n00:10 Synthetic fixture 18 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-18.md",
+      "sha256": "4018754a95c0a516adecbb8258c1d74d19eea76d42e751505081d3c879bc04d2"
+    },
+    {
+      "bytes": 273,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 19\"\nspeaker: \"Fixture Speaker 19\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-19\"\n---\n\n[01:02:03.125] Synthetic fixture 19 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-19.md",
+      "sha256": "2064417766e1e72e427a3387333dd66fad12def57debe3d8a2e54d88dfb90cba"
+    },
+    {
+      "bytes": 236,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 20\"\nspeaker: \"Fixture Speaker 20\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-20\"\n---\n\nThis is synthetic untimed fixture 20. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-20.md",
+      "sha256": "1721eaa7031532f65d0bad43811c665922d018248d611ef1ad65760a009b7b9c"
+    },
+    {
+      "bytes": 263,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 21\"\nspeaker: \"Fixture Speaker 21\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-21\"\n---\n\n[00:01.250 --> 00:03.500] Synthetic engineer 21 demonstrates a fixture-only queue.\n\n[00:04] A second synthetic statement.\n",
+      "path": "tests/fixtures/transcripts/talk-21.md",
+      "sha256": "10f6542bc5e9ef1d832989060588b215fbf16b11a9a9cabc4e953cf764203865"
+    },
+    {
+      "bytes": 272,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 22\"\nspeaker: \"Fixture Speaker 22\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-22\"\n---\n\n00:10 Synthetic fixture 22 has a timestamp and Unicode caf\u00e9.\nContinuation keeps original offsets.\n\nA paragraph with no timestamp.\n",
+      "path": "tests/fixtures/transcripts/talk-22.md",
+      "sha256": "5a70b00a6a9313230ef6dc19118c791f65dc71631b5735543f7deecce4421ae1"
+    },
+    {
+      "bytes": 273,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 23\"\nspeaker: \"Fixture Speaker 23\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-23\"\n---\n\n[01:02:03.125] Synthetic fixture 23 begins after an hour.\n[01:02:04.250] **Guest Example:** An explicitly labelled synthetic guest.\n",
+      "path": "tests/fixtures/transcripts/talk-23.md",
+      "sha256": "8c51db861629e8f433267b9b4a11a5bf637828ef69ebff2001e51496dfb879f7"
+    },
+    {
+      "bytes": 236,
+      "content_utf8": "---\ntitle: \"Synthetic transcript 24\"\nspeaker: \"Fixture Speaker 24\"\ncompany: null\nsource_url: \"https://www.ai.engineer/fixtures/talk-24\"\n---\n\nThis is synthetic untimed fixture 24. No timing may be invented.\n\nAnother synthetic paragraph.\n",
+      "path": "tests/fixtures/transcripts/talk-24.md",
+      "sha256": "e61fcd260a599b5f5fbcc9659903568a3e2cf9acb2a18d6958bb721f89265da9"
+    }
+  ],
+  "format": "skillware-lossless-utf8-artifacts-v1",
+  "purpose": "Broker capture of synthetic fixture sources under the 40-path cap; not a transcript release pack."
+}

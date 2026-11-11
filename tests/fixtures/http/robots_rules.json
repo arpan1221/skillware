@@ -1,0 +1,146 @@
+[
+  {
+    "name": "longest disallow after allow",
+    "rules": "User-agent: *\nAllow: /\nDisallow: /private/\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "longest disallow before allow",
+    "rules": "User-agent: *\nDisallow: /private/\nAllow: /\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "wildcard end anchor denies",
+    "rules": "User-agent: *\nDisallow: /*.md$\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "end anchor permits query",
+    "rules": "User-agent: *\nDisallow: /*.md$\n",
+    "path": "/talks/fixture.md?revision=1",
+    "allowed": true
+  },
+  {
+    "name": "longer Allow exception",
+    "rules": "User-agent: *\nDisallow: /*.md$\nAllow: /public/fixture.md$\n",
+    "path": "/public/fixture.md",
+    "allowed": true
+  },
+  {
+    "name": "Allow wins identical tie",
+    "rules": "User-agent: *\nDisallow: /talks/fixture.md\nAllow: /talks/fixture.md\n",
+    "path": "/talks/fixture.md",
+    "allowed": true
+  },
+  {
+    "name": "specific agent ignores default allow",
+    "rules": "User-agent: *\nAllow: /\nUser-agent: SkillwareTranscriptFetcher\nDisallow: /talks/\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "most specific agent wins",
+    "rules": "User-agent: Skillware\nAllow: /\nUser-agent: SkillwareTranscriptFetcher\nDisallow: /talks/\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "repeated agent groups merge",
+    "rules": "User-agent: SkillwareTranscriptFetcher\nAllow: /\nUser-agent: SKILLWARETRANSCRIPTFETCHER\nDisallow: /private/\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "multi agent group applies",
+    "rules": "User-agent: AnotherBot\nUser-agent: SkillwareTranscriptFetcher\nDisallow: /talks/\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "encoded unreserved URL denied",
+    "rules": "User-agent: *\nDisallow: /private/\n",
+    "path": "/%70rivate/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "encoded unreserved rule denied",
+    "rules": "User-agent: *\nDisallow: /%70rivate/\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "UTF8 escaped URL matches Unicode rule",
+    "rules": "User-agent: *\nDisallow: /café/\n",
+    "path": "/caf%C3%A9/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "query wildcard policy applies",
+    "rules": "User-agent: *\nDisallow: /*?secret=*\n",
+    "path": "/talks/fixture.md?secret=yes",
+    "allowed": false
+  },
+  {
+    "name": "unrelated agent ignored",
+    "rules": "User-agent: AnotherBot\nDisallow: /\nUser-agent: *\nAllow: /\n",
+    "path": "/talks/fixture.md",
+    "allowed": true
+  },
+  {
+    "name": "agent substring cannot override wildcard denial",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: Transcript\nAllow: /\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "agent suffix cannot override wildcard denial",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: Fetcher\nAllow: /\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "mixed case agent prefix applies",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: sKiLlWaRe\nAllow: /talks/\n",
+    "path": "/talks/fixture.md",
+    "allowed": true
+  },
+  {
+    "name": "empty specific disallow falls back to wildcard denial",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: SkillwareTranscriptFetcher\nDisallow:\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "empty specific allow falls back to wildcard denial",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: SkillwareTranscriptFetcher\nAllow:\n",
+    "path": "/talks/fixture.md",
+    "allowed": false
+  },
+  {
+    "name": "rate only specific group falls back to wildcard denial",
+    "rules": "User-agent: *\nDisallow: /private/\nUser-agent: SkillwareTranscriptFetcher\nCrawl-delay: 2\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "unmatched specific rule falls back to wildcard denial",
+    "rules": "User-agent: *\nDisallow: /private/\nUser-agent: SkillwareTranscriptFetcher\nAllow: /public/\n",
+    "path": "/private/talk.md",
+    "allowed": false
+  },
+  {
+    "name": "applicable specific allow overrides wildcard denial",
+    "rules": "User-agent: *\nDisallow: /\nUser-agent: SkillwareTranscriptFetcher\nAllow: /talks/\n",
+    "path": "/talks/fixture.md",
+    "allowed": true
+  },
+  {
+    "name": "unmatched specific rule falls back to wildcard allow",
+    "rules": "User-agent: *\nAllow: /\nUser-agent: SkillwareTranscriptFetcher\nDisallow: /private/\n",
+    "path": "/talks/fixture.md",
+    "allowed": true
+  }
+]

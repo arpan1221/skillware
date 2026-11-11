@@ -1,0 +1,84 @@
+{
+  "note": "Synthetic recorded protocol fixtures; no real talk content or live-site capture.",
+  "robots": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain"
+    },
+    "body": "User-agent: *\nDisallow: /private/\nCrawl-delay: 2\nRequest-rate: 1/3\nSitemap: https://www.ai.engineer/sitemap.xml\n"
+  },
+  "first": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/markdown; charset=utf-8",
+      "ETag": "\"fixture-v1\"",
+      "Last-Modified": "Tue, 10 Nov 2026 00:00:00 GMT"
+    },
+    "body": "---\ntitle: Synthetic HTTP fixture\nspeaker: Fixture Speaker\nsource_url: https://www.ai.engineer/talks/fixture.md\n---\n[00:01] A synthetic statement for offline testing.\n"
+  },
+  "changed": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/markdown",
+      "ETag": "\"fixture-v2\"",
+      "Last-Modified": "Wed, 11 Nov 2026 00:00:00 GMT"
+    },
+    "body": "---\ntitle: Synthetic HTTP fixture\nspeaker: Fixture Speaker\nsource_url: https://www.ai.engineer/talks/fixture.md\n---\n[00:01] A revised synthetic statement for offline testing.\n"
+  },
+  "unchanged": {
+    "status": 304,
+    "headers": {
+      "ETag": "\"fixture-v1\""
+    },
+    "body": ""
+  },
+  "index": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html"
+    },
+    "body": "<html><a href='/talks/fixture.md'>Synthetic transcript</a></html>"
+  },
+  "sitemap": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "body": "<?xml version='1.0'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'><url><loc>https://www.ai.engineer/talks/fixture.md</loc></url></urlset>"
+  },
+  "limited": {
+    "status": 429,
+    "headers": {
+      "Retry-After": "12"
+    },
+    "body": ""
+  },
+  "redirect": {
+    "status": 302,
+    "headers": {
+      "Location": "/private/blocked.md"
+    },
+    "body": ""
+  },
+  "llms": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/plain"
+    },
+    "body": "# Synthetic AI Engineer index\n[Fixture transcript](https://www.ai.engineer/talks/fixture.md)\n"
+  },
+  "empty_index": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "text/html"
+    },
+    "body": "<html><h1>Synthetic index</h1></html>"
+  },
+  "empty_sitemap": {
+    "status": 200,
+    "headers": {
+      "Content-Type": "application/xml"
+    },
+    "body": "<?xml version='1.0'?><urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'></urlset>"
+  }
+}

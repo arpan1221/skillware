@@ -1,9 +1,10 @@
 # skillware product specification
 
-Status: C01 design for review. The C01 deliverables are this document,
-[ARCHITECTURE.md](ARCHITECTURE.md), and [REQUIREMENTS.md](REQUIREMENTS.md).
-They define the future implementation; the seed contains only README and LICENSE.
-No pipeline, corpus, quality results, or launch permission is implied.
+Status: C03 ingest contract, extending the C01 design and C02 scaffold.
+This document, [ARCHITECTURE.md](ARCHITECTURE.md), and
+[REQUIREMENTS.md](REQUIREMENTS.md) describe the AI Engineer Markdown fetcher
+and local ingest authorized by the C03 assignment. C01 delivery limits are historical. No corpus
+quality result, downstream implementation, or launch permission is implied.
 
 ## Product goal and scope
 
@@ -13,11 +14,12 @@ It should translate concrete practices into instructions with applicability,
 limitations, evidence, and evaluation results. It should help a reader distinguish
 agreement across talks from disagreement and from evidence that is too thin.
 
-MVP inputs are operator-provided local Markdown transcripts from AI Engineer,
-source metadata, and optional local snapshots of referenced repositories. The
-seed repository includes none of that corpus. Ingestion reads those local inputs;
-it does not download videos, transcripts, or repositories. Later, **paste any
-channel** can expand source selection and acquisition under a separate design.
+MVP ingest retrieves Markdown transcripts from the AI Engineer site with a
+polite fetcher and also accepts operator-provided local Markdown transcripts and
+metadata. Fetched raw Markdown lives in a private cache outside the repository
+and release pack. Optional repository snapshots remain operator-provided local
+inputs. This is transcript retrieval, not permission to redistribute full talks.
+A hosted YouTube scraper and **paste any channel** remain out of scope.
 
 The due-diligence Page gaps named in the C01 objective become explicit product
 requirements: cross-talk consensus/contested evidence, repository mining, and
@@ -27,14 +29,13 @@ limited to the three gaps supplied in the objective.
 
 ## Data model
 
-The following six entities are the contract for later `src/skillware/schema.py`.
-No schema implementation exists in C01. Identifiers and references must survive
-serialization; changing a source or extraction creates a version with provenance
+The following six entities are the contract for `src/skillware/schema.py`.
+Identifiers and references must survive serialization; changing a source or extraction creates a version with provenance
 rather than silently rewriting evidence used by an existing skill.
 
 | Entity | Required information and relationships |
 | --- | --- |
-| `Talk` | `id`, `title`, `speaker`, nullable `company`, `source_url`, nullable `youtube_video_id`, `transcript_path`, `transcript_sha256`. Preserve unresolved metadata explicitly. Source identity, not filename, determines duplicate talks. |
+| `Talk` | `id`, `title`, `speaker`, nullable `company`, `source_url`, nullable `youtube_video_id`, `transcript_path`, `transcript_sha256`, and nullable fetch provenance containing source URL, UTC fetch date, and content SHA-256. Preserve unresolved metadata explicitly. Source identity, not filename, determines duplicate talks. |
 | `Segment` | `id`, `talk_id`, `ordinal`, private `text`, source character offsets, nullable `start_seconds`/`end_seconds`, and a source-backed speaker override for multi-speaker talks when needed. Preserve the original timing precision. |
 | `Claim` | `id`, `segment_id`, one atomic `statement`, its `applicability`, one short supporting `quote`, quote character offsets within the segment, `citation_status`, `repo_ref_ids`, and extraction provenance. Provenance includes input/prompt/schema hashes, adapter/provider/model identifiers, run receipt, and review status. |
 | `RepoRef` | `id`, canonical `url`, `host`, `owner`, `name`, linked `claim_ids`, `inspection_status`, nullable pinned `commit`, license value or explicit unknown with evidence, and claimed-versus-observed facts. Observations carry file path, line range, and blob hash. |
@@ -62,7 +63,7 @@ unrun. A later successful stage cannot erase an earlier failure or blockage.
 
 | Stage | Contract |
 | --- | --- |
-| ingest | Read declared local Markdown inputs; normalize metadata; retain source offsets and real timing; identify duplicate talks; emit `Talk` and `Segment` records. Missing or ambiguous speaker/source attribution makes affected claims BLOCKED; contradictory attribution makes them FAIL. An undecided duplicate check blocks the affected cluster's distinct-talk assessment. |
+| ingest | Fetch AI Engineer Markdown into a private cache, or read declared cached/local inputs; normalize source-backed metadata; retain exact source offsets and real timing; deduplicate source identity; emit versioned `Talk` and `Segment` records with provenance. Missing inputs or missing/ambiguous speaker/source attribution are BLOCKED; contradictory attribution is FAIL. Undecided duplicates block ingest and the affected cluster's distinct-talk assessment and never create two independent Talks. |
 | extract | Use a configured existing CLI subscription to propose atomic practices, applicability, exact short quotes, and repository mentions. Validate response structure and quote spans before accepting `Claim`/`RepoRef` records. Reject invented evidence. |
 | cluster | Form candidates with local vectors, then assess scoped agreement and opposition using source evidence. Emit labeled `Cluster` records with rationale, unresolved relations, and provenance. Similarity alone never establishes consensus. |
 | synthesize | Turn eligible reviewed clusters into draft `Skill` instructions. Cite procedural claims, preserve caveats, and present contested alternatives with both sources. Keep insufficient evidence as research notes, outside the release pack. |
@@ -72,8 +73,115 @@ unrun. A later successful stage cannot erase an earlier failure or blockage.
 The provider/model/CLI choice is configuration, not product identity. Extraction
 and synthesis assume **existing CLI subscriptions only: no paid API budget and
 no Anthropic credits**. An unavailable subscription or unsupported structured
-output blocks the stage; there is no automatic paid API fallback. C01 performs
-no live LLM calls. `grok-4.7-high` remains an Arpan decision, not a dependency.
+output blocks the stage; there is no automatic provider fallback. C03 and
+fixture tests perform no live LLM calls. `grok-4.7-high` remains an Arpan decision,
+not a dependency.
+
+## Ingest acquisition and parsing
+
+`uv run skillware ingest fetch --out <cache>` retrieves AI Engineer Markdown.
+`--out` declares the private cache root by default; optional `--root <root>`
+constrains it to a broader operator-declared private root. An optional repeated
+`--url <url>` supplies AI Engineer transcript or discovery URLs. Requests identify
+Skillware in the User-Agent, respect `robots.txt`, and enforce rate limits,
+including source-provided crawl delays and retry delays. ETag and Last-Modified
+validators enable conditional requests. Unchanged content is skipped; completed
+cache entries survive interruption so a rerun resumes without losing progress.
+Robots agent groups match the longest case-insensitive prefix of the Skillware
+product token, not arbitrary substrings. If no applicable specific path rule
+matches, wildcard rules remain the fallback, including when the specific group
+contains only pacing directives. Applicable pacing limits are retained.
+Robots denials, unavailable required resources, and incomplete retrieval remain
+visible in the fetch receipt rather than appearing as successful empty work.
+
+Each cached transcript has raw Markdown and fetch provenance: source URL, fetch
+date in UTC, and SHA-256 of the exact content bytes. A 304 response, or a 200 with
+the same bytes at the same source URL, preserves the original fetch date and
+ingest version. Updated ETag/Last-Modified validators alone are cache bookkeeping,
+not a new source representation. Changed content, source URL, or source fetch date
+creates a new ingest version; prior evidence is retained.
+The cache is private working data, never a repository or release-pack artifact.
+Retrieval does not waive A2 quote limits or the C12 AI Engineer launch-terms gate.
+
+`uv run skillware ingest --cache <dir> --db <path> [--manifest <jsonl>] [--objects <dir>]`
+parses cached or local Markdown without network access. `--cache` declares the
+input root by default; optional `--root <root>` constrains all input paths,
+including the manifest. The explicit database path declares its output location.
+Reject paths outside declared roots and all supplied symlinks, including root
+aliases, nested input files, and cache artifacts. Use the real non-symlink spelling
+of a root. Missing inputs with a safe database destination produce a persisted
+BLOCKED receipt and nonzero exit status. Malformed declarations with no safe
+output destination emit the BLOCKED receipt as JSON on stdout. An unreadable
+input directory fails the attempt and appears in its receipt; it cannot silently
+produce a partial passing corpus.
+
+Before committing Talk rows, preserve the exact parsed source bytes in a private
+content-addressed store. Local source snapshots default to `<db>.objects`;
+`--objects <dir>` declares an alternate object root. The object root must be
+outside repositories and release packs and obey the same symlink containment
+rules. Existing immutable fetch-cache `.objects` are reused when available.
+Each Talk's `transcript_path` pins its `<transcript_sha256>.txt` object, retaining
+the bytes needed to resolve every historical Segment offset even after input
+files are renamed or edited. Before a PASS rerun, revalidate every stored source
+path and hash. Missing or corrupt history is FAIL. Legacy mutable transcript
+paths are BLOCKED and require re-ingest from available originals into a fresh
+database; existing versions are never rewritten to imply preserved history.
+
+Title, speaker, nullable company, source URL, and nullable YouTube video ID come
+from transcript/frontmatter metadata or a local JSONL manifest. The fetch
+provenance source URL records acquisition only and never fills missing source
+attribution. Metadata is not inferred from filenames or generated by a model.
+Conflicting attribution is FAIL; missing or ambiguous speaker/source attribution
+is BLOCKED and recorded in the
+stage receipt. A speaker override needs evidence in the source itself. Segment
+text resolves exactly to the recorded character offsets in the hashed transcript.
+Parse only source timestamps, preserving fractional precision; absent start or
+end times remain null, never invented zero or estimated durations.
+
+Inputs are UTF-8. Supported frontmatter is a scalar YAML-style mapping of the
+metadata fields; JSON-quoted and single-quoted scalar values are accepted.
+Collections and complex YAML remain BLOCKED. A Markdown `# title` and a metadata
+preamble with `Speaker:`, `Source:`, `Company:`, and `YouTube Video ID:` are also
+supported. A manifest row supplies the same fields, with `path` relative to the
+manifest's directory and contained under the declared root. For example, this
+synthetic JSONL row describes a local file without inventing its company or video:
+
+```json
+{"path":"talk.md","title":"Synthetic example","speaker":"Fixture Speaker","company":null,"source_url":"https://www.ai.engineer/synthetic-example.md","youtube_video_id":null}
+```
+
+Recognized timestamp lines use `MM:SS.fraction` or `HH:MM:SS.fraction`, optionally
+in brackets, with an optional explicit `--> END` timestamp; fractional parts are
+optional. Explicit `Name:`, `**Name:**`, `**Name**:`, or `[Speaker: Name]` line
+labels provide speaker-override evidence; plain names include Unicode names such
+as `José García:`. Bold prose without a colon is never a speaker label.
+Character offsets refer to the original decoded source, retaining its newline
+characters.
+
+Duplicate checks use video ID, canonical source URL, and transcript hash across
+filenames and URL variants. Known duplicates share a stable Talk identity;
+unresolved identity matches are BLOCKED and cannot create two independent Talks.
+Matching title and speaker alone, or matching host/path with distinct retained
+query parameters alone, does not establish a duplicate or an identity conflict.
+Canonical paths decode only percent-encoded unreserved characters and normalize
+escape case; reserved escapes such as `%2F` remain distinct from `/`. Explicit
+non-default ports retain their endpoint identity. Malformed query percent escapes
+and invalid UTF-8 query encodings are rejected; repeated parameter values retain
+their order. Ingest configuration `c03-ingest-v3` does not trust alternate URL
+aliases produced by older lossy normalization: matches relying on those aliases
+are BLOCKED pending resolution.
+Unchanged source bytes cannot silently acquire conflicting attribution from a
+later manifest. Duplicate copies retain available fetch provenance; conflicting
+fetch records are BLOCKED rather than choosing one by filename.
+Unchanged input is idempotent: the same IDs and evidence versions are reused.
+Changed transcript or fetch provenance creates a new version of that identity.
+
+The JSON ingest receipt beside the database records configuration version, input
+hashes, counts, outcome, and per-input problems. The SQLite stage receipt retains
+configuration, hashes, outcome, errors, and exact output references. Every PASS
+stage lists every written Talk and Segment version in `output_refs`. FAIL and BLOCKED return nonzero and cannot commit partial
+entity output as a passing stage. Fetch progress may remain cached for resume;
+it is not a successful ingest receipt.
 
 ## Cross-talk evidence
 
@@ -199,7 +307,8 @@ republished**, nor are raw extraction dumps or repository source. Public
 availability and a skill's optional `license` field
 do not grant rights to source content. **Ask AI Engineer before launch:** Arpan
 must contact them and resolve acceptable reuse, attribution, and launch terms.
-Launch remains blocked until those terms are recorded and satisfied.
+Launch remains blocked until those terms are recorded and satisfied. This is the
+**C12 launch gate**, not a prerequisite for C03 fetcher/ingest acceptance.
 
 ## Evaluation and acceptance
 
@@ -217,25 +326,29 @@ missing labels, unrun metrics, or undecided criteria mean BLOCKED. Never weaken
 tests or change evaluation criteria to make output pass. Changes to future gold
 labels, rubrics, thresholds, or baselines require the human evaluation-change gate.
 
-C01 acceptance evidence consists of `docs/SPEC.md`, `docs/ARCHITECTURE.md`, and
-`docs/REQUIREMENTS.md`, a section/word-count checklist, their SHA-256 hashes, the
-base revision, and a clean `git diff --check`. New files must also be checked
-directly because ordinary Git diffs omit untracked files.
-Independent tester/reviewer checks and any unresolved Page comparison are reported
-separately from the developer's claim. Runtime and quality checks are BLOCKED in
-this documentation-only slice, not reported as passed.
+C03 acceptance uses at least 20 recorded synthetic or redacted Markdown fixture
+transcripts and recorded HTTP fixtures under `tests/fixtures/`, with no real
+full-talk content and no live site or model. Offline pytest covers timing,
+character offsets, deduplication including undecided cases, attribution,
+idempotency/versioning, root/symlink containment, robots, rate limiting,
+conditional caching/resume, and fetch URL/date/hash persistence. Required checks
+are `uv sync && uv run pytest -q`, `uv run ruff check . && uv run ruff format
+--check .`, CLI checks, `git diff --check`, and `git diff --stat`. Verify untracked
+files too. Record exact commands, exit codes, pass/fail/skip counts, assignment
+and attempt, exact base/branch, changed files, assumptions, deviations, and
+blockers. Unrun checks are BLOCKED. Developer submission is a claim; independent
+testers rerun checks and reviewers assess that evidence.
 
-Before merge, **Arpan sign-off must be recorded in the PR** as an approving review
-or an explicit approval comment applying to the final diff. Agent verdicts do not
-satisfy that gate. Acceptance does not itself authorize this worker to push,
-publish, or merge. Missing PR approval leaves the merge gate BLOCKED.
+Arpan's PR approval is a post-run merge gate, not a C03 success criterion.
+Agent verdicts do not satisfy that gate. This run authorizes no commit, push,
+PR, merge, settings change, or publication.
 
 ## Non-goals
 
 - No hosted YouTube scraper, web UI in the MVP, or paired-mode HTTP app.
 - No general channel ingestion in this MVP; “paste any channel” is later work.
-- No C01 implementation beyond these three docs, C02 scaffolding, network ingestion,
-  live LLM calls, or paid API dependency.
+- No acquisition beyond AI Engineer Markdown, video downloads, live LLM calls
+  in C03/tests, or paid API dependency.
 - No automatic endorsement of a practice, fabricated consensus, full transcript
   redistribution, or execution/vendoring of referenced repositories.
 - No publishing, pushing/merging without human acceptance and authorization,

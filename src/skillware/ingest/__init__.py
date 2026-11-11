@@ -1,1 +1,1 @@
-"""Future local transcript ingestion; persistence lives in skillware.store."""
+"""Private AI Engineer retrieval and source-backed local transcript ingestion."""

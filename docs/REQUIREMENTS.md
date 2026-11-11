@@ -1,12 +1,15 @@
-# C01 requirements
+# Skillware requirements
 
-Requirements seat `4fd3ca28-676b-4788-8c7d-84f4eddb69cc` (read-only, accepted, attempt 2, not BLOCKED). This file is the requirements artifact and an input for the architect and developer. Per Arpan's rework brief, it stays in the C01 deliverable alongside `docs/SPEC.md` and `docs/ARCHITECTURE.md`; revised bytes require fresh broker hashes.
+C03 extends the historical C01 design and C02 scaffold with AI Engineer Markdown
+fetching and local ingest. The assigned base is
+`main@89375493eb8de2d446288b413652881c5c04b5bb`; the branch is `aw/c03-ingest`.
+The old C01 documentation-only delivery limits and seat identities do not define
+this contract. C03 explicitly requires an ingest delta in this document,
+`docs/SPEC.md`, and `docs/ARCHITECTURE.md`.
 
-Architect `7ca2baa9-f918-407e-a742-ff34b0bc57e2` stays a separate read-only seat and depends on this submission. Developer `2ca2f64d-5de8-4382-bdab-e90267746802` (Codex gpt-6-astra, workspace-write) is the only writer of the three C01 documents under Arpan's rework brief. Requirements and architect seats remain read-only.
-
-Worktree: branch `aw/c01-spec`. The seed base (`origin/main`) is `a075291dac541547faaade9fb32cadebc4f4a4a3` (README + Apache-2.0 LICENSE); it is not the current branch tip. The C01 documentation commit is `22f9fefe6fdf9cf3765e91ddf8d003253aa5dfc7`, the HEAD observed before this uncommitted rework. The seed has no due-diligence document and no transcripts. The Page gap is the three topics named in the objective: cross-talk consensus/contested, repo mining, and evals. `.cursor/` is local and must not be committed.
-
-An earlier requirements file in this worktree used seat IDs from a different run. Those IDs are void. Use the IDs in this file.
+The original due-diligence Page was unavailable in C01. Its three supplied topics
+remain cross-talk consensus/contested evidence, repository mining, and evals;
+this ingest work does not claim a new comparison against the missing Page.
 
 ## Requirements
 
@@ -17,20 +20,36 @@ Taken from the objective, README.md, LICENSE, and the Agent Skills spec at https
 - Goal: turn AI Engineer talks into reusable Agent Skills a coding agent can load.
 - MVP pack name is exactly `The AI Engineer Playbook`.
 - Later, outside the MVP: paste any channel.
-- MVP ingest reads local Markdown transcripts. C01 does not add a download or scrape step. The seed repo does not contain the corpus.
+- MVP ingest politely fetches Markdown transcripts from AI Engineer into a private external cache and also accepts local Markdown plus source metadata. The repository and release pack contain no real full-talk corpus.
 - Pipeline order is fixed: ingest → extract → cluster → synthesize → validate → eval.
-- Entities, later implemented in `src/skillware/schema.py`, are exactly: Talk, Segment, Claim, RepoRef, Cluster, Skill. The architect may add fields. The six entity names stay fixed.
+- Entities in `src/skillware/schema.py` are exactly: Talk, Segment, Claim, RepoRef, Cluster, Skill. The architect may add fields. The six entity names stay fixed.
 
 ### Minimum fields
 
 Forced by citations and the Page gap:
 
-- Talk: speaker, company, title, local transcript path, source URL, optional YouTube video id. Company unknown stays explicit and is never invented.
-- Segment: talk id, order, text, and start/end seconds when the transcript has them. Segment text stays inside the pipeline.
+- Talk: speaker, nullable company, title, transcript path and SHA-256, source URL, nullable YouTube video ID, and nullable fetch provenance containing source URL, UTC fetch date, and exact content hash. Unknown company stays explicit and is never invented.
+- Segment: Talk ID and pinned version, order, private text, exact source character offsets, nullable start/end seconds parsed from transcript timestamps with original precision, and source-backed speaker overrides. Missing timing stays null; it is never invented.
 - Claim: one practice statement, one short quote, and a resolvable citation.
 - RepoRef: canonical URL plus host/owner/name, linked to the claim.
 - Cluster: member claim ids and a cross-talk label.
 - Skill: pack name, Agent Skills `name` and `description`, body, supporting clusters, and citations.
+
+### C03 ingest acceptance
+
+- `uv run skillware ingest fetch --out <cache>` retrieves AI Engineer Markdown with an identifiable User-Agent, robots compliance, rate limits, ETag/Last-Modified conditional caching, and resumable per-transcript progress. Robots groups use the longest case-insensitive agent prefix, with wildcard path rules as fallback when no specific path rule applies; pacing-only groups cannot bypass wildcard restrictions. Repeated `--url` can select AI Engineer discovery or transcript URLs; arbitrary channel/video scraping is out of scope.
+- Raw Markdown and its source URL, UTC fetch date, and content SHA-256 persist together in a private cache outside the repository and release pack. A 304 or same-byte 200 at the same source URL reuses the original fetch date/version, even if ETag/Last-Modified validators change. Changed content, source URL, or source fetch date is versioned at ingest.
+- `uv run skillware ingest --cache <dir> --db <path> [--manifest <jsonl>] [--objects <dir>]` parses cached or local Markdown into Talk/Segment rows. Metadata comes from scalar transcript/frontmatter or the local UTF-8 JSONL manifest, never guessed filenames or model output. The fetch provenance URL records acquisition only and cannot fill missing source attribution. Manifest `path` is relative to its parent directory; SPEC defines supported fields and syntax.
+- `--cache` or fetch `--out` declares its root by default; optional `--root <root>` constrains paths to an explicit enclosing root. Inputs, manifests, and cache artifacts outside the declared root are rejected, as are all supplied symlinks including root aliases; use the real non-symlink root spelling. The database path is an explicit output declaration.
+- Duplicate checks use video ID, canonical URL, and transcript hash across filenames and URL variants. Known duplicates share a stable identity; undecided duplicates are recorded as BLOCKED and never create two independent Talks. Matching title/speaker text or matching host/path with distinct retained query parameters alone is not an identity match.
+- URL identity preserves reserved path escapes and explicit non-default ports, rejects invalid query percent escapes and UTF-8 encodings, and retains repeated query parameter order. Ingest `c03-ingest-v3` blocks unverifiable aliases from earlier lossy normalization. Cross-run manifest changes cannot silently contradict unchanged source attribution; duplicate copies must retain fetch provenance or BLOCK conflicting records.
+- Explicit `Name:`, `**Name:**`, `**Name**:`, or `[Speaker: Name]` labels provide source-backed speaker overrides; plain names include Unicode names such as `José García:`. Colon-less bold prose is not a speaker label.
+- Missing inputs and missing/ambiguous speaker/source attribution are BLOCKED. Contradictory attribution is FAIL. Both appear in the stage receipt and return a nonzero CLI status. Directory enumeration errors fail the attempt rather than silently omitting unreadable inputs. Missing inputs with a safe database destination get a persisted receipt; malformed declarations without a safe output destination emit a BLOCKED JSON receipt on stdout.
+- Unchanged reruns reuse the same IDs and versions. Changed transcripts or fetch provenance create new immutable versions with provenance, retaining earlier evidence.
+- Every new Talk pins exact source bytes in a private content-addressed object store before its rows commit. Local snapshots default to `<db>.objects`; optional `--objects <dir>` declares another root, outside repositories/release packs and subject to path/symlink containment. Existing immutable fetch `.objects` are reused. Before a PASS rerun all stored history paths and hashes are checked, so edited/renamed inputs cannot invalidate previous offsets. Missing/corrupt objects FAIL; legacy mutable paths BLOCK and require re-ingest from available originals into a fresh database without rewriting history.
+- The JSON receipt beside the database contains configuration version, input hashes, counts, outcome, and per-input diagnostics. SQLite stage receipts retain configuration, hashes, outcome, errors, and exact output references. Every PASS stage lists every written Talk/Segment version in `output_refs`; FAIL/BLOCKED cannot commit partial passing entity output.
+- Offline pytest uses at least 20 recorded synthetic/redacted Markdown transcripts and recorded HTTP fixtures under `tests/fixtures/`, never real full-talk content or a live site/model. Cover timing, offsets, deduplication including undecided cases, attribution, idempotency/versioning, containment, robots/rate limits/cache/resume, and fetch URL/date/hash persistence.
+- Required checks: `uv sync && uv run pytest -q`, `uv run ruff check . && uv run ruff format --check .`, CLI checks, `git diff --check`, and `git diff --stat`. Include untracked files. Use `UV_CACHE_DIR=/tmp/skillware-c03-uv-cache UV_OFFLINE=1`; a missing dependency or unrun check is BLOCKED.
 
 ### Page gap
 
@@ -47,23 +66,23 @@ Both docs use the same labels.
 - Every published quote cites speaker, company, and talk, plus a YouTube timestamp link built from the transcript's video id and start time (`t=` seconds). `src/skillware/links` owns that formatting. A quote with no timestamp is not published with a timestamp link.
 - Missing or ambiguous speaker/source attribution makes the claim BLOCKED, not merely flagged; contradicted attribution or a failed span check makes it FAIL. Neither can be published or counted as supporting/opposing publication evidence. Unknown company remains explicitly unknown.
 - SPEC states a numeric short-quote cap so validate can reject transcript dumps. The number is an architect assumption, written the same way in both docs, and is not an Arpan question.
-- Code license stays Apache-2.0, matching LICENSE and README.md. The project claims no rights in talk content; rights remain with their respective rights holders. Publish short quotes and links. Do not republish full transcripts. Ask AI Engineer before launch.
+- Code license stays Apache-2.0, matching LICENSE and README.md. The project claims no rights in talk content; rights remain with their respective rights holders. Publish short quotes and links. Do not republish full transcripts. Ask AI Engineer before launch: this is the C12 launch gate, not a C03 acceptance prerequisite. A2 quote limits stay unchanged.
 - SKILL.md YAML frontmatter follows https://agentskills.io/specification. Required: `name` (1–64 chars, lowercase letters, numbers, hyphens; no leading, trailing, or consecutive hyphens; matches the skill directory) and `description` (1–1024 chars, what it does and when to use it). Optional: `license`, `compatibility` (max 500 characters if present), `metadata` (string-to-string map), `allowed-tools` (experimental). Cursor-only keys such as `disable-model-invocation` are not required.
 
 ### Architecture
 
-- Python 3.12, uv, typer. Package modules are exactly `src/skillware/{cli,schema,ingest,extract,cluster,synth,links,evals}`.
-- Claim store is local, one of jsonl, SQLite, or DuckDB. ARCHITECTURE picks one, labels it an assumption, and both docs use that pick. It supports claim, cluster, and eval queries. No hosted database.
-- LLM layer is provider-agnostic (provider id, model id, CLI-backed adapter). Extraction uses existing CLI subscriptions only: no paid API budget and no Anthropic credits. `grok-4.7-high` is not locked.
+- Python 3.12, uv, Typer, Pydantic v2, Ruff, and pytest. Package modules are exactly `src/skillware/{cli,schema,ingest,extract,cluster,synth,links,evals}`.
+- Claim store is local SQLite (A1); JSONL is optional interchange. It supports versioned evidence and claim, cluster, and eval queries. No hosted database.
+- LLM layer is provider-agnostic (provider id, model id, CLI-backed adapter). Extraction uses existing CLI subscriptions only: no paid API budget, API keys, Anthropic credits, or automatic provider fallback. `grok-4.7-high` is not locked.
 - Embeddings and clustering do not require a paid API key. Clustering records its seed and emits `consensus`, `contested`, or `insufficient`.
-- CI is an outline only. No workflow file in C01. The outline is Python 3.12, uv, `git diff --check`, tests that do not call the network or a paid LLM, and no secrets.
+- Tests/CI use Python 3.12, uv, fixture adapters and recorded HTTP, without network, live models, or secrets. C03 does not modify workflows.
 - Protected paths: secrets and env files; gold-label and eval fixtures once they exist (human gate `evaluation-change`); never weaken tests; do not commit `.cursor/`.
 
 ## Constraints
 
-- C01 delivers `docs/SPEC.md`, `docs/ARCHITECTURE.md`, and `docs/REQUIREMENTS.md`. These are the only editable files under Arpan's rework brief; no implementation or scaffolding is included.
-- Requirements and architect seats are read-only. The developer is the only writer of the three C01 documents for this rework.
-- Developer evidence is the three doc paths, a section/word-count checklist covering criteria 1–5, broker file hashes, and results from `git diff --check` and `git diff --stat`. `git diff --check` not run means BLOCKED.
+- C03 writes only the assigned ingest implementation, supporting fixtures/tests, and the required delta in these three documents. Do not edit LICENSE, workflows, secrets, local agent artifacts, or reviewed eval gold/rubrics/thresholds/baselines.
+- Developer evidence records assignment/attempt, exact base and branch, changed files, exact commands and exit codes, pass/fail/skip counts, diff checks, assumptions, deviations, and blockers. Include untracked files and mark every unrun check BLOCKED.
+- Use Agent World scoped messages and evidence. A developer submission is a claim, never completion; independent testers rerun checks and record a review. Command-free reviewers cite tester evidence.
 - SPEC and ARCHITECTURE use the same entity names, stage names, module names, storage assumption, license stance, and Page-gap labels.
 - Claims in a broker submission are truncated at 500 characters, with at most 30 claims. The file is the durable record.
 
@@ -72,9 +91,9 @@ Both docs use the same labels.
 - No hosted YouTube scraper.
 - No web UI in the MVP.
 - No paired-mode HTTP app.
-- No C01 implementation, no C02 scaffolding, no network ingestion, and no live LLM calls.
-- No push, merge, repo-setting changes, or secrets.
-- Criterion 6 (Arpan's PR approval or explicit comment) is a human merge gate. Agents cannot satisfy it. It is not one of the four SPEC open questions.
+- No video downloads, arbitrary source acquisition, or live LLM calls in C03/tests.
+- No commit, push, PR, merge, repo-setting changes, publication, or secrets.
+- Arpan's PR approval or explicit comment is a post-run human merge gate, not a C03 success criterion. Agents cannot satisfy it; it is not one of the four SPEC open questions.
 
 ## Decisions
 
@@ -91,6 +110,6 @@ SPEC Open questions lists only these items, and no team decisions:
 
 The architect records each choice in ARCHITECTURE and SPEC uses the same choice:
 
-- Which local claim store: jsonl, SQLite, or DuckDB.
+- A1: local SQLite is the authoritative claim store; JSONL is optional interchange.
 - The numeric short-quote cap.
 - How embeddings run without a paid API key, and the clustering seed policy, within the label rules above.
