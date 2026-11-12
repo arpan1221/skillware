@@ -299,7 +299,7 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
         label = _SPEAKER.match(content)
         if label is None:
             plain_prefix = re.match(r"^([^:\n]+):\s+", content)
-            if plain_prefix and _ambiguous_speaker(plain_prefix[1]):
+            if plain_prefix and _ambiguous_plain_label(plain_prefix[1]):
                 parsed.issues.append(
                     Issue(
                         StageOutcome.BLOCKED,
@@ -308,42 +308,20 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
                 )
         if label:
             name = next(v for v in label.groupdict().values() if v is not None).strip()
-            if label["plain"] and not _ambiguous_speaker(name):
-                parts = name.split()
-                lower = [part for part in parts if part[0].islower()]
-                unknown = [
-                    part
-                    for part in lower
-                    if part not in _NAME_PARTICLES
-                    and not (
-                        part[:2] in {"d'", "d’", "l'", "l’"}
-                        and len(part) > 2
-                        and part[2].isalpha()
-                        and not part[2].islower()
-                    )
-                ]
-                if lower and (
-                    unknown or all(part in _NAME_PARTICLES for part in parts)
-                ):
-                    if unknown and (
-                        not parts[-1][0].islower()
-                        or any(
-                            character.isupper()
-                            for part in unknown
-                            for character in part
-                        )
-                        or (
-                            any(part in _NAME_PARTICLES for part in lower)
-                            and not parts[0][0].islower()
-                        )
-                    ):
+            if label["plain"]:
+                if _ambiguous_speaker(name):
+                    if not _ambiguous_plain_label(name):
+                        label = None
+                else:
+                    kind = _plain_name_kind(name)
+                    if kind == "uncertain":
                         parsed.issues.append(
                             Issue(
                                 StageOutcome.BLOCKED,
                                 f"unresolved plain speaker attribution at offset {offset}",
                             )
                         )
-                    else:
+                    elif kind == "prose":
                         label = None
             if name in {"Note", "Example", "Warning", "Tip", "Source", "Title"}:
                 label = None
@@ -376,11 +354,68 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
     return parsed
 
 
+_UNKNOWN_SPEAKERS = {"unknown", "anonymous", "tbd", "n/a", "?", "panel", "multiple"}
+
+
+def _plain_name_kind(name: str) -> str:
+    """Reuse the plain-label grammar without interpreting every colon as a name."""
+    if name in {"Note", "Example", "Warning", "Tip", "Source", "Title"}:
+        return "prose"
+    if not re.fullmatch(rf"{_NAME_WORD}(?: {_NAME_WORD})*", name):
+        return "prose"
+    parts = name.split()
+    lower = [part for part in parts if part[0].islower()]
+    unknown = [
+        part
+        for part in lower
+        if part not in _NAME_PARTICLES
+        and not (
+            part[:2] in {"d'", "d’", "l'", "l’"}
+            and len(part) > 2
+            and part[2].isalpha()
+            and not part[2].islower()
+        )
+    ]
+    if lower and (unknown or all(part in _NAME_PARTICLES for part in parts)):
+        if unknown and (
+            not parts[-1][0].islower()
+            or any(character.isupper() for part in unknown for character in part)
+            or (
+                any(part in _NAME_PARTICLES for part in lower)
+                and not parts[0][0].islower()
+            )
+        ):
+            return "uncertain"
+        return "prose"
+    return "name"
+
+
+def _ambiguous_plain_label(prefix: str) -> bool:
+    """Plain separators need name evidence; explicit speaker syntax does not."""
+    prefix = prefix.strip()
+    if not _ambiguous_speaker(prefix):
+        return False
+    if prefix.casefold() in _UNKNOWN_SPEAKERS:
+        return True
+    parts = re.split(
+        r"\s+(?:and|or)(?:\s*/\s*(?:and|or))?\s+|[;&]|(?<!\bn)/|/(?!a\b)",
+        prefix,
+        flags=re.I,
+    )
+    # A plausible/uncertain name on either side remains unresolved attribution.
+    # Only prefixes whose components are all clear prose fall back to body text.
+    return any(
+        part.strip().casefold() in _UNKNOWN_SPEAKERS
+        or _plain_name_kind(part.strip()) != "prose"
+        for part in parts
+        if part.strip()
+    )
+
+
 def _ambiguous_speaker(speaker: str) -> bool:
     return (
         not speaker.strip()
-        or speaker.casefold()
-        in {"unknown", "anonymous", "tbd", "n/a", "?", "panel", "multiple"}
+        or speaker.casefold() in _UNKNOWN_SPEAKERS
         or bool(re.search(r"\s(?:and|or)\s|[/;]|\S\s*&\s*\S", speaker, re.I))
     )
 

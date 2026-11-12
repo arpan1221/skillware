@@ -365,3 +365,132 @@ def test_review_boundary_body_separators_are_not_speaker_labels(tmp_path, prefix
     segment = Segment.model_validate_json(row[0])
     assert segment.speaker_override is None
     assert segment.text == source[segment.source_start : segment.source_end]
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "body",
+    [
+        "The cost/benefit ratio: 2 to 1.",
+        "The input/output ratio: two outputs per input.",
+        "cost/benefit: a useful tradeoff.",
+        "The design & implementation details: ordinary prose.",
+        "The setup; teardown steps: ordinary prose.",
+        "The pros and cons: an ordinary discussion.",
+        "The advantages or disadvantages: an ordinary discussion.",
+        "pros and cons: ordinary prose.",
+        "and/or: alternatives in prose.",
+        "Note/Example: ordinary prose.",
+    ],
+)
+def test_review_prose_prefix_keeps_text_without_speaker_override(
+    tmp_path, prefix, body
+):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    source = _transcript(body=prefix + body)
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override is None
+    assert segment.speaker_override_evidence is None
+    assert segment.text == source[segment.source_start : segment.source_end]
+    assert body in segment.text
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "label",
+    [
+        "n/a :",
+        "? :",
+        "unknown :",
+        "Alice/bob:",
+        "Alice & bob:",
+        "Alice and bob:",
+        "unknown / anonymous:",
+        "Tim de Vries/Bob:",
+        "Tim de vries / Bob:",
+        "**The cost/benefit ratio:**",
+        "[Speaker: The cost/benefit ratio]",
+    ],
+)
+def test_review_prose_prefix_retains_uncertain_or_explicit_attribution_blocks(
+    tmp_path, prefix, label
+):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(
+        _transcript(body=prefix + label + " Unresolved attribution.")
+    )
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    assert any("ambiguous segment speaker" in message for message in result.errors)
+    assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+    with Store(db) as store:
+        assert store.connection.execute("SELECT count(*) FROM talks").fetchone()[0] == 0
+        assert (
+            store.connection.execute("SELECT count(*) FROM segments").fetchone()[0] == 0
+        )
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Alice and/or bob:",
+        "Alice and / or bob:",
+        "Alice or/and bob:",
+        "n/a or bob:",
+        "n/a / bob:",
+        "bob/n/a:",
+        "N/A&bob:",
+        "Or/bob:",
+    ],
+)
+def test_review_prose_tokens_keep_ambiguous_participants(tmp_path, prefix, label):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(
+        _transcript(body=prefix + label + " Unresolved attribution.")
+    )
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    assert any("ambiguous segment speaker" in message for message in result.errors)
+    assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+    with Store(db) as store:
+        assert store.connection.execute("SELECT count(*) FROM talks").fetchone()[0] == 0
+        assert (
+            store.connection.execute("SELECT count(*) FROM segments").fetchone()[0] == 0
+        )
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "body",
+    [
+        "The status is n/a: ordinary prose.",
+        "plan/a: ordinary prose.",
+        "n/abc: ordinary prose.",
+    ],
+)
+def test_review_prose_tokens_keep_nonparticipant_prose(tmp_path, prefix, body):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    source = _transcript(body=prefix + body)
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override is None
+    assert segment.speaker_override_evidence is None
+    assert segment.text == source[segment.source_start : segment.source_end]
+    assert body in segment.text
