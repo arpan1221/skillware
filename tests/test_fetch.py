@@ -789,7 +789,15 @@ def _real_http_wire(monkeypatch, entries):
 
         def makefile(self, mode):
             assert mode == "rb"
-            return io.BytesIO(self.raw)
+            raw, error = self.raw if isinstance(self.raw, tuple) else (self.raw, None)
+
+            class Wire(io.BytesIO):
+                def read(self, amount=-1):
+                    if error is not None:
+                        raise error("fixture body failure")
+                    return super().read(amount)
+
+            return Wire(raw)
 
     class Opener:
         def open(self, request, timeout):
@@ -963,3 +971,101 @@ def test_review_transport_truncated_fetch_never_publishes_partial_cache(
         if p.is_file() and p.name != "fetch-receipt.json"
     }
     assert after == before
+
+
+@pytest.mark.parametrize("status", [200, 429])
+@pytest.mark.parametrize(
+    "declared",
+    ["nope", "-5", "+3", "3.0", "", "3, 4", "3\r\nContent-Length: 4", "3, x"],
+)
+def test_review_boundary_invalid_declared_length_is_blocked(
+    monkeypatch, status, declared
+):
+    from skillware.ingest.fetch import FetchBlocked, http_get
+
+    _real_http_wire(
+        monkeypatch,
+        [(URL, _raw_response(status, f"Content-Length: {declared}", b"abc"))],
+    )
+    with pytest.raises(FetchBlocked, match="Content-Length"):
+        http_get(URL, {})
+
+
+@pytest.mark.parametrize("declared", ["3, 3", "3\r\nContent-Length: 3", "0003"])
+def test_review_boundary_identical_declared_lengths_remain_valid(monkeypatch, declared):
+    from skillware.ingest.fetch import http_get
+
+    _real_http_wire(
+        monkeypatch, [(URL, _raw_response(200, f"Content-Length: {declared}", b"abc"))]
+    )
+    assert http_get(URL, {}).body == b"abc"
+
+
+@pytest.mark.parametrize("status", [302, 429, 503])
+@pytest.mark.parametrize("delay", [60, 600])
+@pytest.mark.parametrize(
+    "failure", ["short", "invalid-length", "chunked", "timeout", "reset"]
+)
+def test_review_boundary_invalid_body_still_enforces_server_cooldown(
+    tmp_path, recorded, monkeypatch, status, delay, failure
+):
+    from skillware.ingest import fetch
+
+    robots = b"User-agent: *\nAllow: /\n"
+    headers = f"Retry-After: {delay}\r\nLocation: {SECOND}\r\n"
+    if failure == "chunked":
+        headers += "Transfer-Encoding: chunked"
+        body = b"10\r\nshort"
+    else:
+        headers += "Content-Length: " + (
+            "invalid" if failure == "invalid-length" else "1000"
+        )
+        body = b"partial"
+    wire = _raw_response(status, headers, body)
+    if failure in {"timeout", "reset"}:
+        wire = (wire, TimeoutError if failure == "timeout" else ConnectionResetError)
+    entries = [
+        (ROBOTS, _raw_response(200, f"Content-Length: {len(robots)}", robots)),
+        (URL, wire),
+    ]
+    if delay <= 300:
+        complete = recorded["first"].body
+        entries.append(
+            (
+                SECOND,
+                _raw_response(
+                    200,
+                    f"Content-Type: text/markdown\r\nContent-Length: {len(complete)}",
+                    complete,
+                ),
+            )
+        )
+    pending, _ = _real_http_wire(monkeypatch, entries)
+    clock = Recorded([])
+    calls = []
+
+    def transport(url, headers):
+        calls.append((url, clock.seconds))
+        return fetch.http_get(url, headers)
+
+    result = fetch.fetch_transcripts(
+        tmp_path / "cache",
+        tmp_path,
+        [URL, SECOND],
+        transport=transport,
+        clock=clock.clock,
+        sleeper=clock.sleep,
+        now=clock.now,
+    )
+    assert result.outcome == StageOutcome.BLOCKED
+    assert not pending
+    if delay <= 300:
+        assert [url for url, _ in calls] == [ROBOTS, URL, SECOND]
+        assert calls[2][1] - calls[1][1] >= delay
+        assert result.counts["fetched"] == 1
+        assert result.counts["blocked"] == 1
+    else:
+        assert [url for url, _ in calls] == [ROBOTS, URL]
+        assert max(clock.sleeps, default=0) <= 300
+        assert result.counts["fetched"] == 0
+        assert result.counts["blocked"] == 2

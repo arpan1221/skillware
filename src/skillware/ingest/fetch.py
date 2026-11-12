@@ -59,6 +59,14 @@ class FetchBlocked(ValueError):
     """A prerequisite, HTTP result, or robots decision prevents acquisition."""
 
 
+class _ResponseBlocked(FetchBlocked):
+    """Discard an invalid body while retaining headers needed for cooldowns."""
+
+    def __init__(self, message: str, response: Response):
+        super().__init__(message)
+        self.response = response
+
+
 class _NoRedirect(HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
         return None
@@ -74,14 +82,48 @@ def http_get(url: str, headers: Mapping[str, str]) -> Response:
         except HTTPError as error:
             response = error
         with response:
-            # Use the parser's effective framing length: bodyless responses are
-            # zero, while chunked/close-delimited responses have no fixed length.
-            expected_length = response.length
-            body = response.read(MAX_BYTES + 1)
+            metadata = Response(response.status, dict(response.headers), b"", url)
+            framing = response.fp if isinstance(response, HTTPError) else response
+            # HTTPResponse treats malformed Content-Length as absent. Validate
+            # the declared values, including duplicates, before accepting EOF.
+            if not framing.chunked:
+                declared = response.headers.get_all("Content-Length", [])
+                lengths = []
+                for field in declared:
+                    for value in field.split(","):
+                        value = value.strip()
+                        if not re.fullmatch(r"[0-9]+", value):
+                            raise _ResponseBlocked(
+                                "invalid Content-Length framing", metadata
+                            )
+                        digits = value.lstrip("0") or "0"
+                        if len(digits) > 20:
+                            raise _ResponseBlocked(
+                                "Content-Length exceeds supported size", metadata
+                            )
+                        lengths.append(int(digits))
+                if lengths and len(set(lengths)) != 1:
+                    raise _ResponseBlocked(
+                        "conflicting Content-Length framing", metadata
+                    )
+                bodyless = 100 <= response.status < 200 or response.status in {204, 304}
+                if lengths and not bodyless:
+                    # Identical repeated/combined field values are legal; make
+                    # their framing explicit when the stdlib parser did not.
+                    framing.length = lengths[0]
+            expected_length = framing.length
+            try:
+                body = response.read(MAX_BYTES + 1)
+            except (HTTPException, OSError) as error:
+                raise _ResponseBlocked(
+                    "incomplete or invalid HTTP response", metadata
+                ) from error
             if len(body) > MAX_BYTES:
-                raise FetchBlocked("HTTP response exceeds the 10 MiB limit")
+                raise _ResponseBlocked(
+                    "HTTP response exceeds the 10 MiB limit", metadata
+                )
             if expected_length is not None and len(body) != expected_length:
-                raise FetchBlocked("incomplete HTTP response body")
+                raise _ResponseBlocked("incomplete HTTP response body", metadata)
             return Response(response.status, dict(response.headers), body, url)
     except HTTPException as error:
         raise FetchBlocked("incomplete or invalid HTTP response") from error
@@ -330,7 +372,11 @@ class _Client:
             self.sleeper(delay)
         self.requests += 1
         self.next_request = self.clock() + interval
-        response = self.transport(url, {"User-Agent": USER_AGENT, **headers})
+        body_error = None
+        try:
+            response = self.transport(url, {"User-Agent": USER_AGENT, **headers})
+        except _ResponseBlocked as error:
+            response, body_error = error.response, error
         if response.url is not None and _url(response.url) != url:
             raise FetchBlocked("transport followed an unchecked redirect")
         if len(response.body) > MAX_BYTES:
@@ -352,6 +398,8 @@ class _Client:
             if not math.isfinite(wait):
                 wait = interval
             self.next_request = max(self.next_request, self.clock() + max(0, wait))
+        if body_error is not None:
+            raise body_error
         return response
 
     def policy(self, url: str) -> tuple[_RobotsPolicy, float]:

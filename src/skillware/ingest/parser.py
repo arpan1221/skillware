@@ -297,6 +297,15 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
         stamp = _STAMP.match(line)
         content = line[stamp.end() :] if stamp else line.lstrip()
         label = _SPEAKER.match(content)
+        if label is None:
+            plain_prefix = re.match(r"^([^:\n]+):\s+", content)
+            if plain_prefix and _ambiguous_speaker(plain_prefix[1]):
+                parsed.issues.append(
+                    Issue(
+                        StageOutcome.BLOCKED,
+                        f"ambiguous segment speaker attribution at offset {offset}",
+                    )
+                )
         if label:
             name = next(v for v in label.groupdict().values() if v is not None).strip()
             if label["plain"] and not _ambiguous_speaker(name):
@@ -372,7 +381,7 @@ def _ambiguous_speaker(speaker: str) -> bool:
         not speaker.strip()
         or speaker.casefold()
         in {"unknown", "anonymous", "tbd", "n/a", "?", "panel", "multiple"}
-        or bool(re.search(r"\s(?:and|or|&)\s|/|;", speaker, re.I))
+        or bool(re.search(r"\s(?:and|or)\s|[/;]|\S\s*&\s*\S", speaker, re.I))
     )
 
 
