@@ -1,9 +1,12 @@
 """Synthetic recorded HTTP exchanges; sockets are forbidden by conftest."""
 
 import hashlib
+import io
 import json
 from datetime import UTC, datetime, timedelta
+from http.client import HTTPResponse
 from pathlib import Path
+from urllib.error import HTTPError
 
 import pytest
 
@@ -771,3 +774,192 @@ def test_304_refreshes_validators_without_changing_fetch_provenance(tmp_path, re
     next_run = Recorded([(ROBOTS, recorded["robots"]), (URL, Response(304, {}))])
     assert next_run.fetch(tmp_path, [URL]).outcome == StageOutcome.PASS
     assert next_run.calls[-1][1]["If-None-Match"] == '"fresh-validator"'
+
+
+def _real_http_wire(monkeypatch, entries):
+    """Exercise HTTP framing with in-memory sockets and bounded real reads."""
+    from skillware.ingest import fetch
+
+    pending = list(entries)
+    reads = []
+
+    class MemorySocket:
+        def __init__(self, raw):
+            self.raw = raw
+
+        def makefile(self, mode):
+            assert mode == "rb"
+            return io.BytesIO(self.raw)
+
+    class Opener:
+        def open(self, request, timeout):
+            expected_url, raw = pending.pop(0)
+            assert request.full_url == expected_url
+            assert timeout == 30
+            response = HTTPResponse(MemorySocket(raw))
+            response.begin()
+            original_read = response.read
+
+            def bounded_read(amount):
+                reads.append(amount)
+                assert amount == fetch.MAX_BYTES + 1
+                return original_read(amount)
+
+            response.read = bounded_read
+            if response.status >= 300:
+                raise HTTPError(
+                    expected_url, response.status, "fixture", response.headers, response
+                )
+            return response
+
+    monkeypatch.setattr(fetch, "build_opener", lambda *_: Opener())
+    return pending, reads
+
+
+def _raw_response(status, headers, body):
+    return f"HTTP/1.1 {status} Fixture\r\n{headers}\r\n\r\n".encode() + body
+
+
+@pytest.mark.parametrize("status", [200, 503])
+def test_review_transport_rejects_truncated_content_length(monkeypatch, status):
+    from skillware.ingest.fetch import FetchBlocked, http_get
+
+    _real_http_wire(
+        monkeypatch, [(URL, _raw_response(status, "Content-Length: 1000", b"partial"))]
+    )
+    with pytest.raises(FetchBlocked, match="incomplete HTTP response body"):
+        http_get(URL, {})
+
+
+@pytest.mark.parametrize("body", [b"10\r\nshort", b"3\r\nabc\r\n", b"bogus\r\n"])
+def test_review_transport_chunked_eof_is_typed_block(monkeypatch, body):
+    from skillware.ingest.fetch import FetchBlocked, http_get
+
+    _real_http_wire(
+        monkeypatch, [(URL, _raw_response(200, "Transfer-Encoding: chunked", body))]
+    )
+    with pytest.raises(FetchBlocked, match="incomplete or invalid HTTP response"):
+        http_get(URL, {})
+
+
+@pytest.mark.parametrize(
+    "headers,wire_body,expected",
+    [
+        ("Content-Length: 3", b"abc", b"abc"),
+        ("Connection: close", b"abc", b"abc"),
+        ("Transfer-Encoding: chunked", b"3\r\nabc\r\n0\r\n\r\n", b"abc"),
+        (
+            "Transfer-Encoding: chunked\r\nContent-Length: 999",
+            b"3\r\nabc\r\n0\r\n\r\n",
+            b"abc",
+        ),
+        ("Content-Length: 0", b"", b""),
+    ],
+)
+def test_review_transport_valid_framing(monkeypatch, headers, wire_body, expected):
+    from skillware.ingest.fetch import http_get
+
+    pending, reads = _real_http_wire(
+        monkeypatch, [(URL, _raw_response(200, headers, wire_body))]
+    )
+    assert http_get(URL, {}).body == expected
+    assert not pending
+    assert len(reads) == 1
+
+
+@pytest.mark.parametrize("status", [204, 304])
+def test_review_transport_bodyless_status_ignores_representation_length(
+    monkeypatch, status
+):
+    from skillware.ingest.fetch import http_get
+
+    _real_http_wire(
+        monkeypatch, [(URL, _raw_response(status, "Content-Length: 1000", b""))]
+    )
+    response = http_get(URL, {})
+    assert response.status == status
+    assert response.body == b""
+
+
+@pytest.mark.parametrize("framing", ["length", "close", "chunked"])
+@pytest.mark.parametrize("size", [32, 33])
+def test_review_transport_size_cap_stays_bounded(monkeypatch, framing, size):
+    from skillware.ingest import fetch
+
+    monkeypatch.setattr(fetch, "MAX_BYTES", 32)
+    body = b"x" * size
+    headers = {
+        "length": f"Content-Length: {size}",
+        "close": "Connection: close",
+        "chunked": "Transfer-Encoding: chunked",
+    }[framing]
+    wire_body = (
+        f"{size:x}\r\n".encode() + body + b"\r\n0\r\n\r\n"
+        if framing == "chunked"
+        else body
+    )
+    _, reads = _real_http_wire(
+        monkeypatch, [(URL, _raw_response(200, headers, wire_body))]
+    )
+    if size > 32:
+        with pytest.raises(fetch.FetchBlocked, match="exceeds"):
+            fetch.http_get(URL, {})
+    else:
+        assert fetch.http_get(URL, {}).body == body
+    assert reads == [33]
+
+
+@pytest.mark.parametrize("resume", [False, True])
+def test_review_transport_truncated_fetch_never_publishes_partial_cache(
+    tmp_path, recorded, monkeypatch, resume
+):
+    from skillware.ingest import fetch
+
+    if resume:
+        Recorded([(ROBOTS, recorded["robots"]), (URL, recorded["first"])]).fetch(
+            tmp_path, [URL]
+        )
+    before = {
+        str(p.relative_to(tmp_path / "cache")): p.read_bytes()
+        for p in (tmp_path / "cache").rglob("*")
+        if p.is_file() and p.name != "fetch-receipt.json"
+    }
+    body = recorded["changed"].body
+    robots = b"User-agent: *\nAllow: /\n"
+    pending, _ = _real_http_wire(
+        monkeypatch,
+        [
+            (ROBOTS, _raw_response(200, f"Content-Length: {len(robots)}", robots)),
+            (
+                URL,
+                _raw_response(
+                    200,
+                    f"Content-Type: text/markdown\r\nContent-Length: {len(body) + 100}",
+                    body,
+                ),
+            ),
+        ],
+    )
+    clock = Recorded([])
+    result = fetch.fetch_transcripts(
+        tmp_path / "cache",
+        tmp_path,
+        [URL],
+        transport=fetch.http_get,
+        clock=clock.clock,
+        sleeper=clock.sleep,
+        now=clock.now,
+    )
+    assert result.outcome == StageOutcome.BLOCKED
+    assert not pending
+    assert any("incomplete HTTP response body" in error for error in result.errors)
+    assert result.counts["fetched"] == 0
+    receipt = json.loads(result.receipt_path.read_text())
+    assert receipt["outcome"] == "BLOCKED"
+    assert receipt["output_refs"] == []
+    after = {
+        str(p.relative_to(tmp_path / "cache")): p.read_bytes()
+        for p in (tmp_path / "cache").rglob("*")
+        if p.is_file() and p.name != "fetch-receipt.json"
+    }
+    assert after == before

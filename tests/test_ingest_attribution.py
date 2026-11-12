@@ -252,3 +252,56 @@ def test_identity_query_values_keep_repeated_parameter_order():
     )
     valid_unicode = "https://ai.engineer/talk?session=%EF%BF%BD"
     assert canonical_url(valid_unicode) == valid_unicode
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Tim de Vries",
+        "Jean de la Fontaine",
+        "Ludwig van Beethoven",
+        "Anne-Marie d'Aboville",
+        "Anne-Marie d’Aboville",
+        "van der Waals",
+        "María de los Ángeles López",
+        "José Luis de la Vega García",
+    ],
+)
+def test_review_particles_preserve_explicit_name_and_offsets(tmp_path, prefix, name):
+    source = _transcript(body=f"{prefix}{name}: A source-backed contribution.")
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override == name
+    assert segment.speaker_override_evidence == f"{name}:"
+    assert segment.text == source[segment.source_start : segment.source_end]
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "label",
+    ["This is Important", "The State of AI", "Tim de vries", "Anne-Marie x’Aboville"],
+)
+def test_review_particles_uncertain_mixed_case_blocks_instead_of_guessing(
+    tmp_path, prefix, label
+):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    source = _transcript(body=f"{prefix}{label}: Unresolved label.")
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    assert any("unresolved plain speaker" in error for error in result.errors)
+    assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+    with Store(db) as store:
+        assert store.connection.execute("SELECT count(*) FROM talks").fetchone()[0] == 0
+        assert (
+            store.connection.execute("SELECT count(*) FROM segments").fetchone()[0] == 0
+        )

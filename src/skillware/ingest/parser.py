@@ -25,10 +25,38 @@ _STAMP = re.compile(
 )
 _META = re.compile(r"^\s*(?:\*\*)?([A-Za-z_ ]+)(?:\*\*)?:\s*(?:\*\*)?(.*?)\s*$")
 _NAME_WORD = r"[^\W\d_](?:[^\W\d_]|[.'’\-\u0300-\u036f])*"
+_NAME_PARTICLES = {
+    "al",
+    "ap",
+    "ben",
+    "bin",
+    "da",
+    "dal",
+    "de",
+    "del",
+    "della",
+    "den",
+    "der",
+    "di",
+    "dos",
+    "du",
+    "el",
+    "ibn",
+    "la",
+    "le",
+    "los",
+    "van",
+    "von",
+    "ten",
+    "ter",
+    "zu",
+    "zum",
+    "zur",
+}
 _SPEAKER = re.compile(
     r"^(?:\*\*(?P<bold>[^*:\n]+)(?::\*\*|\*\*:)|"
     r"\[Speaker:\s*(?P<bracket>[^\]\n]+)\]|"
-    rf"(?P<plain>{_NAME_WORD}(?: {_NAME_WORD}){{0,3}}):)\s+"
+    rf"(?P<plain>{_NAME_WORD}(?: {_NAME_WORD})*):)\s+"
 )
 
 
@@ -271,11 +299,44 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
         label = _SPEAKER.match(content)
         if label:
             name = next(v for v in label.groupdict().values() if v is not None).strip()
-            if (
-                label["plain"]
-                and not _ambiguous_speaker(name)
-                and any(part[0].islower() for part in name.split())
-            ) or name in {"Note", "Example", "Warning", "Tip", "Source", "Title"}:
+            if label["plain"] and not _ambiguous_speaker(name):
+                parts = name.split()
+                lower = [part for part in parts if part[0].islower()]
+                unknown = [
+                    part
+                    for part in lower
+                    if part not in _NAME_PARTICLES
+                    and not (
+                        part[:2] in {"d'", "d’", "l'", "l’"}
+                        and len(part) > 2
+                        and part[2].isalpha()
+                        and not part[2].islower()
+                    )
+                ]
+                if lower and (
+                    unknown or all(part in _NAME_PARTICLES for part in parts)
+                ):
+                    if unknown and (
+                        not parts[-1][0].islower()
+                        or any(
+                            character.isupper()
+                            for part in unknown
+                            for character in part
+                        )
+                        or (
+                            any(part in _NAME_PARTICLES for part in lower)
+                            and not parts[0][0].islower()
+                        )
+                    ):
+                        parsed.issues.append(
+                            Issue(
+                                StageOutcome.BLOCKED,
+                                f"unresolved plain speaker attribution at offset {offset}",
+                            )
+                        )
+                    else:
+                        label = None
+            if name in {"Note", "Example", "Warning", "Tip", "Source", "Title"}:
                 label = None
         if not line.strip():
             current = None

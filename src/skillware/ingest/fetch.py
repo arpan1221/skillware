@@ -17,6 +17,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from html.parser import HTMLParser
+from http.client import HTTPException
 from pathlib import Path
 from urllib.error import HTTPError
 from urllib.parse import quote, unquote, urljoin, urlsplit, urlunsplit
@@ -68,14 +69,22 @@ def http_get(url: str, headers: Mapping[str, str]) -> Response:
     opener = build_opener(_NoRedirect())
     request = Request(url, headers=dict(headers), method="GET")
     try:
-        response = opener.open(request, timeout=30)
-    except HTTPError as error:
-        response = error
-    with response:
-        body = response.read(MAX_BYTES + 1)
-        if len(body) > MAX_BYTES:
-            raise FetchBlocked("HTTP response exceeds the 10 MiB limit")
-        return Response(response.status, dict(response.headers), body, url)
+        try:
+            response = opener.open(request, timeout=30)
+        except HTTPError as error:
+            response = error
+        with response:
+            # Use the parser's effective framing length: bodyless responses are
+            # zero, while chunked/close-delimited responses have no fixed length.
+            expected_length = response.length
+            body = response.read(MAX_BYTES + 1)
+            if len(body) > MAX_BYTES:
+                raise FetchBlocked("HTTP response exceeds the 10 MiB limit")
+            if expected_length is not None and len(body) != expected_length:
+                raise FetchBlocked("incomplete HTTP response body")
+            return Response(response.status, dict(response.headers), body, url)
+    except HTTPException as error:
+        raise FetchBlocked("incomplete or invalid HTTP response") from error
 
 
 def _url(value: str) -> str:
