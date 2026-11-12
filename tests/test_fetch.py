@@ -124,6 +124,100 @@ def metadata(tmp_path, url=URL):
     return json.loads((tmp_path / "cache" / f"{key}.json").read_text())
 
 
+@pytest.mark.parametrize("status", [301, 302, 303, 307, 308])
+def test_review_edge_redirect_excessive_delay_blocks_origin(tmp_path, recorded, status):
+    wire = Recorded(
+        [
+            (ROBOTS, recorded["robots"]),
+            (URL, Response(status, {"Location": SECOND, "Retry-After": "600"})),
+        ]
+    )
+    result = wire.fetch(tmp_path, [URL, SECOND])
+    assert result.outcome == StageOutcome.BLOCKED
+    assert result.counts["blocked"] == 2
+    assert [url for url, _, _ in wire.calls] == [ROBOTS, URL]
+    assert all("required delay exceeds 300 seconds" in error for error in result.errors)
+    assert max(wire.sleeps, default=0) <= 300
+
+
+@pytest.mark.parametrize("retry", ["Wed, 11 Nov 2026 01:00:00 GMT", "9" * 400])
+def test_review_edge_redirect_excessive_delay_stops_cross_origin(
+    tmp_path, recorded, retry
+):
+    target = "https://ai.engineer/talks/target.md"
+    wire = Recorded(
+        [
+            (ROBOTS, recorded["robots"]),
+            (URL, Response(302, {"Location": target, "Retry-After": retry})),
+        ]
+    )
+    result = wire.fetch(tmp_path, [URL, SECOND])
+    assert result.outcome == StageOutcome.BLOCKED
+    assert result.counts["blocked"] == 2
+    assert [url for url, _, _ in wire.calls] == [ROBOTS, URL]
+    assert all("required delay exceeds 300 seconds" in error for error in result.errors)
+
+
+@pytest.mark.parametrize("cross_origin", [False, True])
+@pytest.mark.parametrize("retry", ["60", "Wed, 11 Nov 2026 00:01:03 GMT", "300"])
+def test_review_edge_redirect_waits_before_following(
+    tmp_path, recorded, cross_origin, retry
+):
+    target = "https://ai.engineer/talks/target.md" if cross_origin else SECOND
+    entries = [
+        (ROBOTS, recorded["robots"]),
+        (URL, Response(302, {"Location": target, "Retry-After": retry})),
+    ]
+    if cross_origin:
+        entries.append(("https://ai.engineer/robots.txt", recorded["robots"]))
+    entries.append((target, recorded["first"]))
+    wire = Recorded(entries)
+    result = wire.fetch(tmp_path, [URL])
+    assert result.outcome == StageOutcome.PASS
+    assert not wire.entries
+    required = 300 if retry == "300" else 60
+    # Even the destination's robots request must wait for the redirect cooldown.
+    assert wire.calls[2][2] - wire.calls[1][2] >= required
+    assert max(wire.sleeps) == required
+
+
+def test_review_edge_bom_fetch_ingest_preserves_original_source(tmp_path, recorded):
+    from skillware.ingest.pipeline import ingest_transcripts
+    from skillware.schema import Segment, Talk
+    from skillware.store import Store
+
+    raw = b"\xef\xbb\xbf" + recorded["first"].body
+    wire = Recorded(
+        [
+            (ROBOTS, recorded["robots"]),
+            (URL, Response(200, {"Content-Type": "text/markdown"}, raw)),
+        ]
+    )
+    assert wire.fetch(tmp_path, [URL]).outcome == StageOutcome.PASS
+    assert next((tmp_path / "cache").glob("*.md")).read_bytes() == raw
+    db = tmp_path / "private.sqlite3"
+    assert (
+        ingest_transcripts(tmp_path / "cache", db, tmp_path).outcome
+        == StageOutcome.PASS
+    )
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM talks").fetchall()
+        talk = Talk.model_validate_json(row[0])
+        segments = [
+            Segment.model_validate_json(row[0])
+            for row in store.connection.execute("SELECT payload FROM segments")
+        ]
+    assert talk.transcript_sha256 == hashlib.sha256(raw).hexdigest()
+    assert talk.fetch_provenance is not None
+    assert talk.fetch_provenance.content_sha256 == hashlib.sha256(raw).hexdigest()
+    assert segments
+    for segment in segments:
+        assert (
+            segment.text
+            == raw.decode("utf-8")[segment.source_start : segment.source_end]
+        )
+
+
 def test_fetch_persists_url_utc_hash_and_private_raw_bytes(tmp_path, recorded):
     wire = Recorded([(ROBOTS, recorded["robots"]), (URL, recorded["first"])])
     result = wire.fetch(tmp_path, [URL])

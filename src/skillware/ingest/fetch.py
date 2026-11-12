@@ -327,7 +327,7 @@ class _Client:
         if len(response.body) > MAX_BYTES:
             raise FetchBlocked("HTTP response exceeds the 10 MiB limit")
         retry_after = _headers(response).get("retry-after")
-        if response.status in {429, 503} and retry_after:
+        if response.status in {301, 302, 303, 307, 308, 429, 503} and retry_after:
             try:
                 wait = float(retry_after)
             except ValueError:

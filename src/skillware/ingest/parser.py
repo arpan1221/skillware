@@ -216,10 +216,15 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
     parsed = ParsedTranscript(text=text, sha256=hashlib.sha256(raw).hexdigest())
     offset = 0
     lines = text.splitlines(keepends=True)
+    if lines and lines[0].startswith("\ufeff"):
+        # Ignore only the leading BOM for recognition, retaining raw text/hash
+        # and its character in every subsequent source offset.
+        lines[0] = lines[0][1:]
+        offset = 1
     index = 0
     if lines and lines[0].strip() == "---":
         index = 1
-        offset = len(lines[0])
+        offset += len(lines[0])
         while index < len(lines) and lines[index].strip() != "---":
             line = lines[index]
             match = _META.match(line)

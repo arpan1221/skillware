@@ -1,11 +1,56 @@
 """Documented preamble labels preserve identity and source evidence."""
 
+import hashlib
+
 import pytest
 
 from skillware.ingest.parser import parse_markdown
 from skillware.ingest.pipeline import ingest_transcripts
 from skillware.schema import Segment, StageOutcome, Talk
 from skillware.store import Store
+
+
+@pytest.mark.parametrize(
+    "metadata",
+    [
+        "---\ntitle: Synthetic BOM\nspeaker: Ada Example\n"
+        "source_url: https://example.test/talk\n---\n",
+        "# Synthetic BOM\nSpeaker: Ada Example\n"
+        "Source URL: https://example.test/talk\n",
+        "Title: Synthetic BOM\nSpeaker: Ada Example\n"
+        "Source URL: https://example.test/talk\n",
+    ],
+)
+def test_review_edge_bom_preserves_metadata_bytes_and_offsets(tmp_path, metadata):
+    body = "[00:01] Exact Unicode evidence: café \ufeff retained.\n"
+    text = "\ufeff" + metadata + "\n" + body
+    raw = text.encode("utf-8")
+    parsed = parse_markdown(raw)
+    assert parsed.issues == []
+    assert parsed.metadata == {
+        "title": "Synthetic BOM",
+        "speaker": "Ada Example",
+        "source_url": "https://example.test/talk",
+    }
+    assert parsed.text == text
+    assert parsed.sha256 == hashlib.sha256(raw).hexdigest()
+    assert len(parsed.segments) == 1
+    assert parsed.segments[0].start == text.index(body)
+    assert parsed.text[parsed.segments[0].start : parsed.segments[0].end] == body
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_bytes(raw)
+    db = tmp_path / "private.sqlite3"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM talks").fetchall()
+        talk = Talk.model_validate_json(row[0])
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+        segment = Segment.model_validate_json(row[0])
+    assert talk.transcript_sha256 == hashlib.sha256(raw).hexdigest()
+    assert segment.text == body == text[segment.source_start : segment.source_end]
+    assert ingest_transcripts(cache, db, tmp_path).counts["unchanged"] == 1
 
 
 @pytest.mark.parametrize("source_label", ["Source", "Source URL"])
