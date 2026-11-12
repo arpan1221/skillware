@@ -272,7 +272,9 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
         if label:
             name = next(v for v in label.groupdict().values() if v is not None).strip()
             if (
-                label["plain"] and any(part[0].islower() for part in name.split())
+                label["plain"]
+                and not _ambiguous_speaker(name)
+                and any(part[0].islower() for part in name.split())
             ) or name in {"Note", "Example", "Warning", "Tip", "Source", "Title"}:
                 label = None
         if not line.strip():

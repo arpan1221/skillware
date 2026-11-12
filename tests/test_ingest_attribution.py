@@ -48,6 +48,87 @@ def test_ambiguous_segment_labels_block_receipt_and_all_rows(tmp_path, label):
         )
 
 
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "name",
+    [
+        "Alice or Bob",
+        "Alice and Bob",
+        "unknown",
+        "anonymous",
+        "panel",
+        "multiple",
+        "tbd",
+    ],
+)
+def test_review_attribution_ambiguous_plain_labels_block(tmp_path, prefix, name):
+    source = _transcript(body=f"{prefix}{name}: Unresolved contribution.")
+    parsed = parse_markdown(source.encode())
+    validate_metadata(parsed)
+    assert parsed.segments[0].speaker == name
+    assert parsed.segments[0].evidence == f"{name}:"
+    assert any("ambiguous segment speaker" in issue.message for issue in parsed.issues)
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    receipt = json.loads(result.receipt_path.read_text())
+    assert receipt["outcome"] == "BLOCKED"
+    assert receipt["output_refs"] == []
+    with Store(db) as store:
+        for table in ("talks", "segments"):
+            assert (
+                store.connection.execute(f"SELECT count(*) FROM {table}").fetchone()[0]
+                == 0
+            )
+
+
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Note",
+        "Example",
+        "Warning",
+        "Tip",
+        "Source",
+        "Title",
+        "the result",
+        "The main point",
+    ],
+)
+def test_review_attribution_prose_controls_keep_headline_speaker(tmp_path, label):
+    source = _transcript(body=f"[00:01] {label}: Ordinary transcript prose.")
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override is None
+    assert segment.speaker_override_evidence is None
+    assert segment.text == source[segment.source_start : segment.source_end]
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+def test_review_attribution_unambiguous_plain_label_keeps_override(tmp_path, prefix):
+    source = _transcript(body=f"{prefix}Alice: An attributed contribution.")
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override == "Alice"
+    assert segment.speaker_override_evidence == "Alice:"
+    assert segment.text == source[segment.source_start : segment.source_end]
+
+
 @pytest.mark.parametrize(
     "scalar",
     [
