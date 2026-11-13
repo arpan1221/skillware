@@ -355,6 +355,17 @@ def parse_markdown(raw: bytes) -> ParsedTranscript:
 
 
 _UNKNOWN_SPEAKERS = {"unknown", "anonymous", "tbd", "n/a", "?", "panel", "multiple"}
+_NUMBERED_PARTICIPANT = re.compile(
+    r"(?:speaker|participant|panel(?:l)?ist)[\s_-]*(?:#\s*)?\d+", re.I
+)
+
+
+def _unidentified_speaker(label: str) -> bool:
+    """Generic numbered participants do not establish a person's identity."""
+    label = label.strip()
+    return label.casefold() in _UNKNOWN_SPEAKERS or bool(
+        _NUMBERED_PARTICIPANT.fullmatch(label)
+    )
 
 
 def _plain_name_kind(name: str) -> str:
@@ -395,7 +406,7 @@ def _ambiguous_plain_label(prefix: str) -> bool:
     prefix = prefix.strip()
     if not _ambiguous_speaker(prefix):
         return False
-    if prefix.casefold() in _UNKNOWN_SPEAKERS:
+    if _unidentified_speaker(prefix):
         return True
     parts = re.split(
         r"\s+(?:and|or)(?:\s*/\s*(?:and|or))?\s+|[;&]|(?<!\bn)/|/(?!a\b)",
@@ -405,8 +416,7 @@ def _ambiguous_plain_label(prefix: str) -> bool:
     # A plausible/uncertain name on either side remains unresolved attribution.
     # Only prefixes whose components are all clear prose fall back to body text.
     return any(
-        part.strip().casefold() in _UNKNOWN_SPEAKERS
-        or _plain_name_kind(part.strip()) != "prose"
+        _unidentified_speaker(part) or _plain_name_kind(part.strip()) != "prose"
         for part in parts
         if part.strip()
     )
@@ -415,7 +425,7 @@ def _ambiguous_plain_label(prefix: str) -> bool:
 def _ambiguous_speaker(speaker: str) -> bool:
     return (
         not speaker.strip()
-        or speaker.casefold() in _UNKNOWN_SPEAKERS
+        or _unidentified_speaker(speaker)
         or bool(re.search(r"\s(?:and|or)\s|[/;]|\S\s*&\s*\S", speaker, re.I))
     )
 

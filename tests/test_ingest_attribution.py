@@ -494,3 +494,95 @@ def test_review_prose_tokens_keep_nonparticipant_prose(tmp_path, prefix, body):
     assert segment.speaker_override_evidence is None
     assert segment.text == source[segment.source_start : segment.source_end]
     assert body in segment.text
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "label",
+    [
+        "Speaker 1/Speaker 2:",
+        "speaker_01/speaker_02:",
+        "Speaker 1 & Speaker 2:",
+        "Speaker 1;Speaker 2:",
+        "Speaker 1 and Speaker 2:",
+        "Participant 1/Participant 2:",
+        "Panelist 1/Panelist 2:",
+        "Speaker1/bob:",
+        "unknown/Speaker2:",
+        "Speaker 1:",
+        "Speaker_01:",
+        "Participant#2:",
+        "**Speaker 1:**",
+        "[Speaker: Speaker 1]",
+        "**Panelist 1/Panelist 2:**",
+    ],
+)
+def test_review_numbered_participants_never_inherit_headline(tmp_path, prefix, label):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    (cache / "talk.md").write_text(
+        _transcript(body=prefix + label + " Unresolved participant contribution.")
+    )
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    assert any("ambiguous segment speaker" in message for message in result.errors)
+    receipt = json.loads(result.receipt_path.read_text())
+    assert receipt["outcome"] == "BLOCKED" and receipt["output_refs"] == []
+    with Store(db) as store:
+        assert store.connection.execute("SELECT count(*) FROM talks").fetchone()[0] == 0
+        assert (
+            store.connection.execute("SELECT count(*) FROM segments").fetchone()[0] == 0
+        )
+
+
+@pytest.mark.parametrize("prefix", ["", "[00:01] "])
+@pytest.mark.parametrize(
+    "body",
+    [
+        "Version1/Version2: ordinary version prose.",
+        "2020/2021: ordinary dates.",
+        "Layer 1/Layer 2: ordinary layer prose.",
+        "The speaker1/speaker2 examples: ordinary prose.",
+        "speaker 1 setup/speaker 2 outputs: ordinary prose.",
+        "The cost/benefit ratio: 2 to 1.",
+        "1/2: an ordinary fraction.",
+        "host1/host2: ordinary network host prose.",
+    ],
+)
+def test_review_numbered_participant_prose_stays_source_exact(tmp_path, prefix, body):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    source = _transcript(body=prefix + body)
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    assert ingest_transcripts(cache, db, tmp_path).outcome == StageOutcome.PASS
+    with Store(db) as store:
+        (row,) = store.connection.execute("SELECT payload FROM segments").fetchall()
+    segment = Segment.model_validate_json(row[0])
+    assert segment.speaker_override is None
+    assert segment.speaker_override_evidence is None
+    assert segment.text == source[segment.source_start : segment.source_end]
+    assert body in segment.text
+
+
+@pytest.mark.parametrize("speaker", ["Speaker 1", "speaker_01", "Participant#2"])
+def test_review_numbered_participant_metadata_cannot_claim_known_identity(
+    tmp_path, speaker
+):
+    cache = tmp_path / "cache"
+    cache.mkdir()
+    source = _transcript(
+        speaker=speaker, body="A contribution with unresolved identity."
+    )
+    (cache / "talk.md").write_text(source)
+    db = tmp_path / "private.db"
+    result = ingest_transcripts(cache, db, tmp_path)
+    assert result.outcome == StageOutcome.BLOCKED
+    assert any("ambiguous speaker attribution" in message for message in result.errors)
+    assert json.loads(result.receipt_path.read_text())["output_refs"] == []
+    with Store(db) as store:
+        assert store.connection.execute("SELECT count(*) FROM talks").fetchone()[0] == 0
+        assert (
+            store.connection.execute("SELECT count(*) FROM segments").fetchone()[0] == 0
+        )
