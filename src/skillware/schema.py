@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import StrEnum
 from pathlib import Path
@@ -88,6 +89,21 @@ class Entity(Record):
         )
 
 
+class FetchProvenance(Record):
+    """Source-backed retrieval facts for a private Markdown cache entry."""
+
+    source_url: NonEmptyText
+    fetched_at: datetime
+    content_sha256: SHA256
+
+    @field_validator("fetched_at")
+    @classmethod
+    def utc_fetch_date(cls, value: datetime) -> datetime:
+        if value.tzinfo is None or value.utcoffset() is None:
+            raise ValueError("fetch date must include a UTC offset")
+        return value.astimezone(UTC)
+
+
 class Talk(Entity):
     # A missing attribution must be representable rather than guessed.
     title: NonEmptyText | None
@@ -97,6 +113,17 @@ class Talk(Entity):
     youtube_video_id: NonEmptyText | None = None
     transcript_path: NonEmptyText
     transcript_sha256: SHA256
+    fetch_provenance: FetchProvenance | None = None
+    ingest_provenance: dict[str, str] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def check_fetch_hash(self) -> Self:
+        if (
+            self.fetch_provenance is not None
+            and self.fetch_provenance.content_sha256 != self.transcript_sha256
+        ):
+            raise ValueError("fetch content hash must match transcript_sha256")
+        return self
 
 
 class Segment(Entity):

@@ -1,0 +1,254 @@
+{
+  "kind": "approved-operator-fix",
+  "timestamp_utc": "2026-11-11T05:50:29.371304+00:00",
+  "base_sha": "89375493eb8de2d446288b413652881c5c04b5bb",
+  "branch": "aw/c03-ingest",
+  "run_id": "f1fe25a7-e7b8-48ae-91cd-266058a7e98a",
+  "developer_attempt": 3,
+  "authorization": "Arpan approved option C in chat: narrow parser fix, regression tests and full verification before PR review.",
+  "change": "Normalize preamble metadata keys before alias lookup so spaced Source URL and YouTube Video ID labels follow the same rules as frontmatter.",
+  "regression": {
+    "timestamp_utc": "2026-11-11T05:49:23.626811+00:00",
+    "command": [
+      ".venv/bin/pytest",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "tests/test_ingest_preamble.py"
+    ],
+    "before_exit": 1,
+    "before_result": "6 failed in 0.58s",
+    "after_exit": 0,
+    "after_result": "6 passed in 0.27s",
+    "parser_before_sha256": "185b1505364c453d9d510d1ddf239a52d11f668608b6153a08fc976be2126685",
+    "parser_after_sha256": "e7186c8160a4f08dc2e9fc7407aef52d661f60a05448cf4ce587c0435d10e368"
+  },
+  "tests": {
+    "passed": 362,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "name": "uv-sync-locked",
+      "command": [
+        "<uv>",
+        "sync",
+        "--locked"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "Using CPython 3.12.3 interpreter at: /usr/bin/python3.12\nCreating virtual environment at: .venv\nResolved 19 packages in 37ms\n   Building skillware @ file://<verification-scratch>\n      Built skillware @ file://<verification-scratch>\nPrepared 1 package in 532ms\nInstalled 18 packages in 25ms\n + annotated-doc==0.0.6\n + annotated-types==0.8.0\n + iniconfig==2.3.1\n + markdown-it-py==4.3.0\n + mdurl==0.1.2\n + packaging==26.3\n + pluggy==1.7.0\n + pydantic==2.14.3\n + pydantic-core==2.50.4\n + pygments==2.21.0\n + pytest==9.2.0\n + rich==15.0.0\n + ruff==0.17.4\n + shellingham==1.5.4\n + skillware==0.1.0 (from file://<verification-scratch>)\n + typer==0.29.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.5\n"
+    },
+    {
+      "name": "pytest-normal",
+      "command": [
+        "<uv>",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "........................................................................ [ 19%]\n........................................................................ [ 39%]\n........................................................................ [ 59%]\n........................................................................ [ 79%]\n........................................................................ [ 99%]\n..                                                                       [100%]\n362 passed in 7.53s\n"
+    },
+    {
+      "name": "pytest-ci",
+      "command": [
+        "<uv>",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache",
+        "GITHUB_ACTIONS": "true",
+        "FORCE_COLOR": "1",
+        "TERM": "xterm-256color"
+      },
+      "exit_code": 0,
+      "output": "\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 19%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 39%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 59%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 79%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m [ 99%]\n\u001b[0m\u001b[32m.\u001b[0m\u001b[32m.\u001b[0m\u001b[32m                                                                       [100%]\u001b[0m\n\u001b[32m\u001b[32m\u001b[1m362 passed\u001b[0m\u001b[32m in 7.56s\u001b[0m\u001b[0m\n"
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "<uv>",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "ruff-format",
+      "command": [
+        "<uv>",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "57 files already formatted\n"
+    },
+    {
+      "name": "cli-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware [OPTIONS] COMMAND [ARGS]...                                   \n                                                                                \n Build evidence-backed Agent Skills from conference transcripts.                \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --help        <bool>  Show this message and exit.                            \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Commands \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 ingest      Fetch AI Engineer Markdown or parse declared local transcripts.  \u2502\n\u2502 extract     Propose atomic claims and repository mentions.                   \u2502\n\u2502 cluster     Assess scoped agreement and opposition across talks.             \u2502\n\u2502 synthesize  Draft skills from reviewed evidence.                             \u2502\n\u2502 validate    Validate the complete candidate skill pack.                      \u2502\n\u2502 eval        Evaluate against reviewed labels and criteria.                   \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "ingest-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "ingest",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware ingest [OPTIONS] COMMAND [ARGS]...                            \n                                                                                \n Fetch AI Engineer Markdown or parse declared local transcripts.                \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --cache           <path>  Cached or local Markdown directory.                \u2502\n\u2502 --db              <path>  Private SQLite output path.                        \u2502\n\u2502 --manifest        <path>  Local JSONL source metadata.                       \u2502\n\u2502 --root            <path>  Input root; defaults to --cache.                   \u2502\n\u2502 --objects         <path>  Private source store outside repos; defaults to    \u2502\n\u2502                           <db>.objects.                                      \u2502\n\u2502 --help            <bool>  Show this message and exit.                        \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Commands \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 fetch  Retrieve AI Engineer Markdown with robots, pacing, and conditional    \u2502\n\u2502        caching.                                                              \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "fetch-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "ingest",
+        "fetch",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware ingest fetch [OPTIONS]                                        \n                                                                                \n Retrieve AI Engineer Markdown with robots, pacing, and conditional caching.    \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --out         <path>       Private cache directory outside repositories.     \u2502\n\u2502 --root        <path>       Cache root; defaults to --out.                    \u2502\n\u2502 --url         <list[str]>  AI Engineer Markdown/index URL; repeatable;       \u2502\n\u2502                            default discovery.                                \u2502\n\u2502 --help        <bool>       Show this message and exit.                       \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "diff-stat",
+      "command": [
+        "git",
+        "diff",
+        "--stat"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "/tmp/skillware-c03-uv-cache"
+      },
+      "exit_code": 0,
+      "output": " docs/ARCHITECTURE.md             | 156 ++++++++++++++++++++++++++--------\n docs/REQUIREMENTS.md             |  65 ++++++++++-----\n docs/SPEC.md                     | 175 ++++++++++++++++++++++++++++++++-------\n schemas/Talk.json                |  49 +++++++++++\n src/skillware/cli.py             | 128 ++++++++++++++++++++++++++--\n src/skillware/ingest/__init__.py |   2 +-\n src/skillware/schema.py          |  27 ++++++\n tests/test_cli.py                |  35 +++++++-\n 8 files changed, 539 insertions(+), 98 deletions(-)\n"
+    }
+  ],
+  "changed_file_sha256": {
+    "docs/ARCHITECTURE.md": "47a29d23609ce141c7395d4ad3dca88a22728ef8719a3f63f2f98790e356c036",
+    "docs/REQUIREMENTS.md": "e2fa7edf48fec6ac77b651ca0f0cf66f31a12cd35e048a5bc1bcfa8eb4ab32d8",
+    "docs/SPEC.md": "8d182487b7c4c3e10517868799637645529001de5a24ec6763f04b6794446fbf",
+    "evidence/c03-attempt2-transcript-artifacts.json": "eff09163b758d2839fd2319179023da01662b4b89f099fe207827ea1a2e39eda",
+    "evidence/c03-developer-attempt1.json": "734f09c73eb83d9e5249ff8d78088e8f4c4ed4bc242668b56f67d7fdf3318378",
+    "evidence/c03-developer-attempt2.json": "11079f78626dbab3e0bf6de421b6131041aefe004d9692686569ac873a68a24c",
+    "evidence/c03-developer-attempt3.json": "6ffa5cdddcb25070bad46f72e2163fbe0e9ef4bf3c189fd0079ca941c391ec8d",
+    "schemas/Talk.json": "80cfe9c50fe32e2b4f7c940ceef202d44f5ec05d642f96dff176599b169bc98e",
+    "src/skillware/cli.py": "ca0e47c6985751c0a828ffc6f172ff95f6347ef3f9e592f4325d798c90a9ada3",
+    "src/skillware/ingest/__init__.py": "7379ade570089ec5908555fe1132f712c949d6a3f4292fbb4e0077626f6843e1",
+    "src/skillware/ingest/fetch.py": "14dd8772e09259aaa4255b080826e6e8be82ed123bbc3a38b0816c5031c05c5d",
+    "src/skillware/ingest/parser.py": "e7186c8160a4f08dc2e9fc7407aef52d661f60a05448cf4ce587c0435d10e368",
+    "src/skillware/ingest/paths.py": "b9ccbe282dab1ae5f08d79b32f76ca62c1d46ba92e511f75d9135eecb78b535d",
+    "src/skillware/ingest/pipeline.py": "035783c78f5c3806dd4a9f989624436067c439d6ca91fa3b3d5a84c15eea6340",
+    "src/skillware/schema.py": "432480e94fdc59b1bea6134a69d95ad55c478aa1c44aed21c2cc321745027db8",
+    "tests/fixtures/http/robots_rules.json": "1cccd03d1c7d57d0e3900fae2fdedea6dd4ce8305a046b52440d3877a24865e6",
+    "tests/fixtures/http/transcripts.json": "f615f5700b5586044ec5203ed942d4176356e73f6e72136cee0ff33f86901e0d",
+    "tests/fixtures/transcripts/talk-01.md": "5cfe4e6327676b7430ee80d4b77d95b3458b712a2f779543f518c376f078815e",
+    "tests/fixtures/transcripts/talk-02.md": "17b20b218260bb6e7825c5c4bfd8f8aa85b37e8ec90097c6e422f84feb12fb20",
+    "tests/fixtures/transcripts/talk-03.md": "7fa8d81a2dca763d9f7015dd30af56f82690631ace8deb8c9c00fc4635e8b8c8",
+    "tests/fixtures/transcripts/talk-04.md": "e3989c822842720355e9516e20688dba72f201922f773a249d45ee1ecf3e6f61",
+    "tests/fixtures/transcripts/talk-05.md": "4897b43029e384c71096a91606a3535e6c914019d10053e0e9690258a49c45be",
+    "tests/fixtures/transcripts/talk-06.md": "5911c64588671564ea774d85c9e87276f72376c10703a4aa6c6adb8b49c3c529",
+    "tests/fixtures/transcripts/talk-07.md": "2177ff6e9f6fa1df99dcf074bb3716e0753b50ccd5b208b82ade3ce5256e238f",
+    "tests/fixtures/transcripts/talk-08.md": "9b5653b65059e399b9a0747caa0f41f64e4593571d50103d34566b6ab2f88efc",
+    "tests/fixtures/transcripts/talk-09.md": "1443e3fdc63db9cc579bfb0094fbfe9d5a07f6041b8845f98c4cc01c31e72a2d",
+    "tests/fixtures/transcripts/talk-10.md": "93867d01aa948caf5235557d6803d776577617d8d44cc6e6cf7859c199eb6bb9",
+    "tests/fixtures/transcripts/talk-11.md": "8d222f019456e8f5e0d658d59c416426ea413f227bec1cd77459bae77354a4a8",
+    "tests/fixtures/transcripts/talk-12.md": "f849824b49d5ae854396325da1a75419c7044302611ae84a7795712b2c5bef99",
+    "tests/fixtures/transcripts/talk-13.md": "dd44253762e75f8c6b0abff2018b876cc732f3f6b1191411841140af3a0b7b5e",
+    "tests/fixtures/transcripts/talk-14.md": "3471b822b45a8b7390f5005f7c56c24f6d1fe0f40fcad63190278f681586a992",
+    "tests/fixtures/transcripts/talk-15.md": "de7bfb532da9a0ce4b659827489151162e1706eeae8ff2a2bd70e8de3ca3a854",
+    "tests/fixtures/transcripts/talk-16.md": "12625e532eefd2f80a9a6cf00f62dfbd81bb7cd45ec81b1aae4b14aec4e78350",
+    "tests/fixtures/transcripts/talk-17.md": "5bfb095bfe4a4c06f04d24045ef6ce793881d1c5214d43d5574d85d13b003460",
+    "tests/fixtures/transcripts/talk-18.md": "4018754a95c0a516adecbb8258c1d74d19eea76d42e751505081d3c879bc04d2",
+    "tests/fixtures/transcripts/talk-19.md": "2064417766e1e72e427a3387333dd66fad12def57debe3d8a2e54d88dfb90cba",
+    "tests/fixtures/transcripts/talk-20.md": "1721eaa7031532f65d0bad43811c665922d018248d611ef1ad65760a009b7b9c",
+    "tests/fixtures/transcripts/talk-21.md": "10f6542bc5e9ef1d832989060588b215fbf16b11a9a9cabc4e953cf764203865",
+    "tests/fixtures/transcripts/talk-22.md": "5a70b00a6a9313230ef6dc19118c791f65dc71631b5735543f7deecce4421ae1",
+    "tests/fixtures/transcripts/talk-23.md": "8c51db861629e8f433267b9b4a11a5bf637828ef69ebff2001e51496dfb879f7",
+    "tests/fixtures/transcripts/talk-24.md": "e61fcd260a599b5f5fbcc9659903568a3e2cf9acb2a18d6958bb721f89265da9",
+    "tests/test_cli.py": "3b4b63e947d2c006fa48d00cba0a63c7a48a93b6e54af132bc11fde8893c4128",
+    "tests/test_fetch.py": "ec47aaeb8ee35364ed6084586f23d0cd3917e966aaeb742721600078ff9ae3d4",
+    "tests/test_fetch_provenance.py": "a5418f5e2d72aaa54a60f0490dd22b4ab17c312fb3bae88b164e402cb1786aa6",
+    "tests/test_ingest.py": "a884cc234c76c7953fb0e0e2a3820c8b9f9d7d2a5ebf4e17ed91b24943b08c20",
+    "tests/test_ingest_attribution.py": "14696199f3fed8142ed4d8d58e168536be0b2fe6e8efcceed9d9fdb257d519a9",
+    "tests/test_ingest_e2e.py": "7851f65b4dc1acffc71e0eeef6630842b0655e95bd4a0d15de8a4b952496a830",
+    "tests/test_ingest_paths.py": "56cc4e79a5b4d953eecbcd6c77b50a127b157181e57576d5c41fbb74b05ed91a",
+    "tests/test_ingest_preamble.py": "f00be3f36e19ded051a53f5d345a79fa53443f75bed331157520f41098dd3758"
+  },
+  "untracked_whitespace_check": "All new files checked with git diff --no-index --check /dev/null PATH; exit 0 or 1 with no whitespace diagnostics.",
+  "verdicts": {
+    "tester_attempt_3": "PASS before manual fix; 356 tests",
+    "reviewer_attempt_3": "CHALLENGE; independently reproduced and repaired here",
+    "council_attempt_3": "UNRUN; no final-attempt council verdict; Agent World remains in rework"
+  },
+  "blockers": [
+    "Live site/model runs intentionally unrun",
+    "GitHub CI and both current-head bot reviews pending"
+  ],
+  "deviations": [
+    "Operator fix explicitly approved after developer exhausted attempts; no run-data edits or service restarts.",
+    "Verification ran outside agent sandboxes in a retained scratch copy; no live fetch or model calls."
+  ]
+}

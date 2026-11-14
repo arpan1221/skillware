@@ -1,0 +1,208 @@
+{
+  "kind": "operator-pr-review-prose-prefix-fix",
+  "timestamp_utc": "2026-11-12T20:23:35.641313+00:00",
+  "reviewed_head": "35866ca39f8e1e39a913373e65adae6b89136700",
+  "base_sha": "89375493eb8de2d446288b413652881c5c04b5bb",
+  "branch": "aw/c03-ingest",
+  "authorization": "Continued the approved C03 PR repair flow under RUNBOOK section 7.4 and Arpan instruction to keep going.",
+  "changes": [
+    "Require the existing plain-name evidence heuristic before treating inferred plain separator/conjunction prefixes as unresolved attribution, preserving ordinary prose and exact source bytes/offsets.",
+    "Keep explicit speaker markup and metadata ambiguity strict, preserve uncertain mixed-case/name-particle attribution blocks, and normalize only classification whitespace around unknown-speaker markers."
+  ],
+  "regression": {
+    "before_exit": 1,
+    "before_result": "24 failed, 18 passed, 121 deselected in 1.20s",
+    "after_exit": 0,
+    "after_result": "42 passed, 121 deselected in 1.14s",
+    "command": [
+      ".venv/bin/pytest",
+      "-p",
+      "no:cacheprovider",
+      "-q",
+      "tests/test_ingest_attribution.py",
+      "-k",
+      "review_prose_prefix"
+    ],
+    "before_sha256": {
+      "src/skillware/ingest/parser.py": "0788a1390177cd066704543c6c502051025869e6b329eafb4360977fdfc1fc21",
+      "tests/test_ingest_attribution.py": "ed9087f1842f910e6ece7e2bf22f288c0cccafb39b8cb77858f7f44b87af74fd"
+    },
+    "changed": [
+      "src/skillware/ingest/parser.py",
+      "tests/test_ingest_attribution.py"
+    ]
+  },
+  "tests": {
+    "passed": 583,
+    "failed": 0,
+    "skipped": 0
+  },
+  "checks": [
+    {
+      "name": "uv-sync-locked",
+      "command": [
+        "<uv>",
+        "sync",
+        "--locked"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "Using CPython 3.12.3 interpreter at: /usr/bin/python3.12\nCreating virtual environment at: .venv\nResolved 19 packages in 0.78ms\n   Building skillware @ file://<verification-scratch>\n      Built skillware @ file://<verification-scratch>\nPrepared 1 package in 354ms\nInstalled 18 packages in 5ms\n + annotated-doc==0.0.6\n + annotated-types==0.8.0\n + iniconfig==2.3.1\n + markdown-it-py==4.3.0\n + mdurl==0.1.2\n + packaging==26.3\n + pluggy==1.7.0\n + pydantic==2.14.3\n + pydantic-core==2.50.4\n + pygments==2.21.0\n + pytest==9.2.0\n + rich==15.0.0\n + ruff==0.17.4\n + shellingham==1.5.4\n + skillware==0.1.0 (from file://<verification-scratch>)\n + typer==0.29.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.5\n"
+    },
+    {
+      "name": "pytest-normal",
+      "command": [
+        "<uv>",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n........................................................................ [ 61%]\n........................................................................ [ 74%]\n........................................................................ [ 86%]\n........................................................................ [ 98%]\n.......                                                                  [100%]\n583 passed in 10.96s\n"
+    },
+    {
+      "name": "pytest-ci",
+      "command": [
+        "<uv>",
+        "run",
+        "pytest",
+        "-q"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>",
+        "GITHUB_ACTIONS": "true",
+        "FORCE_COLOR": "1",
+        "TERM": "xterm-256color"
+      },
+      "exit_code": 0,
+      "output": "........................................................................ [ 12%]\n........................................................................ [ 24%]\n........................................................................ [ 37%]\n........................................................................ [ 49%]\n........................................................................ [ 61%]\n........................................................................ [ 74%]\n........................................................................ [ 86%]\n........................................................................ [ 98%]\n.......                                                                  [100%]\n583 passed in 10.77s\n"
+    },
+    {
+      "name": "ruff-check",
+      "command": [
+        "<uv>",
+        "run",
+        "ruff",
+        "check",
+        "."
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "All checks passed!\n"
+    },
+    {
+      "name": "ruff-format",
+      "command": [
+        "<uv>",
+        "run",
+        "ruff",
+        "format",
+        "--check",
+        "."
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "57 files already formatted\n"
+    },
+    {
+      "name": "cli-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware [OPTIONS] COMMAND [ARGS]...                                   \n                                                                                \n Build evidence-backed Agent Skills from conference transcripts.                \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --help        <bool>  Show this message and exit.                            \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Commands \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 ingest      Fetch AI Engineer Markdown or parse declared local transcripts.  \u2502\n\u2502 extract     Propose atomic claims and repository mentions.                   \u2502\n\u2502 cluster     Assess scoped agreement and opposition across talks.             \u2502\n\u2502 synthesize  Draft skills from reviewed evidence.                             \u2502\n\u2502 validate    Validate the complete candidate skill pack.                      \u2502\n\u2502 eval        Evaluate against reviewed labels and criteria.                   \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "ingest-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "ingest",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware ingest [OPTIONS] COMMAND [ARGS]...                            \n                                                                                \n Fetch AI Engineer Markdown or parse declared local transcripts.                \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --cache           <path>  Cached or local Markdown directory.                \u2502\n\u2502 --db              <path>  Private SQLite output path.                        \u2502\n\u2502 --manifest        <path>  Local JSONL source metadata.                       \u2502\n\u2502 --root            <path>  Input root; defaults to --cache.                   \u2502\n\u2502 --objects         <path>  Private source store outside repos; defaults to    \u2502\n\u2502                           <db>.objects.                                      \u2502\n\u2502 --help            <bool>  Show this message and exit.                        \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\u256d\u2500 Commands \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 fetch  Retrieve AI Engineer Markdown with robots, pacing, and conditional    \u2502\n\u2502        caching.                                                              \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "fetch-help",
+      "command": [
+        "<uv>",
+        "run",
+        "skillware",
+        "ingest",
+        "fetch",
+        "--help"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": "                                                                                \n Usage: skillware ingest fetch [OPTIONS]                                        \n                                                                                \n Retrieve AI Engineer Markdown with robots, pacing, and conditional caching.    \n                                                                                \n\u256d\u2500 Options \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256e\n\u2502 --out         <path>       Private cache directory outside repositories.     \u2502\n\u2502 --root        <path>       Cache root; defaults to --out.                    \u2502\n\u2502 --url         <list[str]>  AI Engineer Markdown/index URL; repeatable;       \u2502\n\u2502                            default discovery.                                \u2502\n\u2502 --help        <bool>       Show this message and exit.                       \u2502\n\u2570\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u256f\n\n"
+    },
+    {
+      "name": "diff-check",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": ""
+    },
+    {
+      "name": "diff-stat",
+      "command": [
+        "git",
+        "diff",
+        "--stat"
+      ],
+      "env": {
+        "UV_OFFLINE": "1",
+        "UV_CACHE_DIR": "<uv-cache>"
+      },
+      "exit_code": 0,
+      "output": " src/skillware/ingest/parser.py   | 97 ++++++++++++++++++++++++++--------------\n tests/test_ingest_attribution.py | 72 +++++++++++++++++++++++++++++\n 2 files changed, 136 insertions(+), 33 deletions(-)\n"
+    }
+  ],
+  "changed_file_sha256": {
+    "src/skillware/ingest/parser.py": "4af2296239e242784c4d6a68e0a079ec76e606af22c10081832d25500d607bfb",
+    "tests/test_ingest_attribution.py": "dd9b574f9f680f74fe2d178a9bd9c77ec131d3174bd22b8ef2ba0280cc434ec3"
+  },
+  "originals_retained_privately": true,
+  "limits": [
+    "No live site/model execution",
+    "GitHub current-head CI and fresh bot reviews still required",
+    "Agent World final-attempt council remains unrun; approved operator repair route"
+  ]
+}

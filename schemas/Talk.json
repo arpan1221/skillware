@@ -1,4 +1,35 @@
 {
+  "$defs": {
+    "FetchProvenance": {
+      "additionalProperties": false,
+      "description": "Source-backed retrieval facts for a private Markdown cache entry.",
+      "properties": {
+        "content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "fetched_at": {
+          "format": "date-time",
+          "title": "Fetched At",
+          "type": "string"
+        },
+        "source_url": {
+          "minLength": 1,
+          "pattern": "\\S",
+          "title": "Source Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_url",
+        "fetched_at",
+        "content_sha256"
+      ],
+      "title": "FetchProvenance",
+      "type": "object"
+    }
+  },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -16,10 +47,28 @@
       "default": null,
       "title": "Company"
     },
+    "fetch_provenance": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/FetchProvenance"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
     "id": {
       "minLength": 1,
       "title": "Id",
       "type": "string"
+    },
+    "ingest_provenance": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Ingest Provenance",
+      "type": "object"
     },
     "schema_version": {
       "const": 1,
